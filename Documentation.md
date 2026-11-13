@@ -13,4 +13,25 @@ Triron James, 5 hours spent toward helping design the ERD file. Finding appropri
 11-12-26: ERD organiztion notes Terrance Dessaure:
 - Static vs Dynamic
 - Shoud we have a CourseDescription table if we already have a course table. We could just have a description inside of the Course table instead of of having a different table for the course description, since each course will be different.
-Recommended Static Parent Tables:
+
+Possible Static Parent Tables:
+( These are going to be the tables that we reference to get the information from the other tables)
+- Departments
+- MeetingTypes
+- StudentTypes
+- Restrictions
+- Buildings
+- Campuses
+- StudentClassifications
+- Degreees
+- DegreeProgramPlans
+- Terms
+- Prereq
+- Programs
+
+Possible Dynamic Child Table:
+- Students
+- Course
+- Sections
+- Professors
+- CouseBillingLineItems
