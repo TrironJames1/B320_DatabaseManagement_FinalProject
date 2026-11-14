@@ -1,4 +1,4 @@
-Triron James, 5 hours spent toward helping design the ERD file. Finding appropriate table names, and relationships.
+11-9-26: Triron James, 5 hours spent toward helping design the ERD file. Finding appropriate table names, and relationships.
 
 11-9-26: Terrance Dessaure, 5 hours helping design the ERD file. Finding relationships and creating tables.
 
@@ -35,3 +35,17 @@ Possible Dynamic Child Table:
 - Sections
 - Professors
 - CouseBillingLineItems
+
+11-12-26: ERD Review and Notes Triron James (2hrs):
+- While looking over the ERD I received feedback from Racheal and Julia
+- While conversating they suggested that we change the waly that we view designing our ERD and that we may have been thinking from a OOP mindset rather than a relational mindset.
+- Discussed static vs dynamic tables
+  . Information should be pulled from static tables into dynamic tables and not vice versa
+  . As a result the static tables would the parents while the dynamic would be the children in the relationship
+- We also discussed the importance of the documentation of assumptions
+
+11-13-26 ERD Review and changes continued, Triron James (2.5hrs):
+- That morning I had Jalyn quickly look over our ERD and give some basic suggestions
+- During the conversation he suggested that we should have some sort of course offerings table to hold all of the dynamic information that we were previously keeping within the courses table
+- We also worked towards condensing some of the tables within our ERD and remapping the connections with the addition of the course offerings table and the removal of other tables
+- We condensed our table count from 20 to 15 while still keeping track of the valuable relationships that will need to be tracked within the ERD
