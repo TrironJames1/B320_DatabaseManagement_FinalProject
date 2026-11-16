@@ -49,3 +49,10 @@ Possible Dynamic Child Table:
 - During the conversation he suggested that we should have some sort of course offerings table to hold all of the dynamic information that we were previously keeping within the courses table
 - We also worked towards condensing some of the tables within our ERD and remapping the connections with the addition of the course offerings table and the removal of other tables
 - We condensed our table count from 20 to 15 while still keeping track of the valuable relationships that will need to be tracked within the ERD
+
+11-16-26 Adjustments to SSMS sql file, Triron James (2.5hrs):
+- Created half of the tables described in the ERD
+- Had to adjust all of the datatypes for each specified column that we wanted to include within the table
+- Specified which columns are primary or foreign keys
+- Some tables were not able to be generated, due to the foreign keys referring to tables that have not been created yet
+- Upon partners completion of the second half of the create tables script, I will go back and ensure that each table can be created as intended. 
