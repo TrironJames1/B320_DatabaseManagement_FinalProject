@@ -14,9 +14,10 @@
 --DROP TABLE IF EXISTS [Degrees];
 --GO
 
---SELECT *
---FROM [USCB Course Catalog - 11.4.26]
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
 
+<<<<<<< HEAD
 --SELECT *
 --FROM [USCB Course Offerings - 11.4.26]
 
@@ -199,3 +200,10 @@ CONSTRAINT [FK_DegreeProgramPlans_DegreeID]
 FOREIGN KEY ([DegreeID])
 REFERENCES [Degrees]([DegreeID, PK])
 );
+=======
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+
+SELECT *
+FROM VendorCopy
+>>>>>>> d26557cc4098144fe3e537b8a53aecc923c34aac
