@@ -55,4 +55,20 @@ Possible Dynamic Child Table:
 - Had to adjust all of the datatypes for each specified column that we wanted to include within the table
 - Specified which columns are primary or foreign keys
 - Some tables were not able to be generated, due to the foreign keys referring to tables that have not been created yet
-- Upon partners completion of the second half of the create tables script, I will go back and ensure that each table can be created as intended. 
+- Upon partners completion of the second half of the create tables script, I will go back and ensure that each table can be created as intended.
+
+11-16-26 Adjustments to SSMS sql file, Terrance Dessaure (3 hrs)
+- Created half of the table described in the ERD
+- Adjusted the datatypes for each column in the tables
+- Specified primary and foreign keys
+
+Some Debugging that we need to do:
+- Tables were created in wrong order. `Professors` was created before `Departments`, and `CourseOfferings` and `Students` were created before the tables they reference. We must make sure that every parent table is created before that tables that point to it
+- Tables were dropped in the wrong order. The `DROP`s need to be reversed so the child tables go first. Otherwise, SQL Server refuses to drop a table that another table still references.
+- Students and Enrollments point to each other, so they cannot be created first. We can get rid of EnrollmentID from Students. `Enrollments.StudentID` already thinks them.
+- Some data types didn’t match. Students.RestrictionID and Students.DegreeID were VARCHAR(MAX) but referenced INT keys.  We should change them to INT.
+- A foreign key pointed at a non-key column. FK_Students_StudentType referenced Classifications(StudentType), which isn’t a key. StudentClassificationID already links to that table.
+- Two constraints had the same name. CourseBillingLineItems reused FK_Enrollments_StudentID, and constraint names have to be unique. It’s now FK_CourseBillingLineItems_StudentID.
+- Missing foreign keys added: CourseOfferings.MeetingTypeID now links to MeetingTypes, and Enrollments.RestrictionID now links to Restrictions.
+
+I add a second file that has these corrections so we can look over and review them 
