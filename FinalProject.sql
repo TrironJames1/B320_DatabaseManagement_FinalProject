@@ -5,14 +5,21 @@
 */
 
 -- Dropping Tables if they exist
---DROP TABLE IF EXISTS Locations;
---DROP TABLE IF EXISTS Professors;
---DROP TABLE IF EXISTS Terms;
---DROP TABLE IF EXISTS Courses;
---DROP TABLE IF EXISTS Students;
---DROP TABLE IF EXISTS Enrollments;
---DROP TABLE IF EXISTS [Degrees];
---GO
+DROP TABLE IF EXISTS Locations;
+DROP TABLE IF EXISTS Professors;
+DROP TABLE IF EXISTS Terms;
+DROP TABLE IF EXISTS Courses;
+DROP TABLE IF EXISTS Students;
+DROP TABLE IF EXISTS Enrollments;
+DROP TABLE IF EXISTS [Degrees];
+DROP TABLE IF EXISTS Departments;
+DROP TABLE IF EXISTS Restrictions;
+DROP TABLE IF EXISTS CourseBillingLineItems;
+DROP TABLE IF EXISTS Prereqs;
+DROP TABLE IF EXISTS MeetingTypes;
+DROP TABLE IF EXISTS Classifications;
+DROP TABLE IF EXISTS DegreeProgramPlans;
+GO
 
 SELECT *
 FROM [USCB Course Catalog - 11.4.26]
@@ -43,6 +50,9 @@ CREATE TABLE Professors (
 	FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID),
 )
 GO
+
+SELECT *
+FROM Professors
 
 --TRIRON
 CREATE TABLE Terms (
@@ -155,50 +165,71 @@ CREATE TABLE [Degrees]
 )
 GO
 
-CREATE TABLE [Departments] (
-[DepartmentID, PK] <type>,
-[DepartmentDescription] <type>
-);
+-- Terrance 
+CREATE TABLE Departments (
+DepartmentID INT IDENTITY(1,1) PRIMARY KEY, 
+DepartmentDescription VARCHAR(MAX)
+)
+GO
 
-CREATE TABLE [Restrictions] (
-[RestrictionID, Pk] <type>,
-[RestrictionDescription] <type>
-);
+SELECT *
+FROM Departments
 
-CREATE TABLE [CourseBillingLineItems] (
-[CourseBillingLineItemsID, PK] <type>,
-[StudentID] <type>,
-[CRN/CourseID] <type>,
-[CreditHours] <type>
-);
+-- Terrance
+CREATE TABLE Restrictions (
+RestrictionID INT IDENTITY(1,1) PRIMARY KEY,
+RestrictionDescription VARCHAR(MAX)
+)
+GO
 
-CREATE TABLE [Prereqs] (
-[PrereqID, PK] <type>,
-[PrereqDescription] <type>
-);
+-- Terrance 
+CREATE TABLE CourseBillingLineItems (
+CourseBillingLineItemsID INT IDENTITY(1,1) PRIMARY KEY,
+StudentID INT,
+[CRN/CourseID] INT, -- *
+CreditHours INT
 
-CREATE TABLE [MeetingTypes] (
-[MeetingTypeID, PK] <type>,
-[MeetingTypeDescription] <type>
-);
 
-CREATE TABLE [StudentClassifications] (
-[StudentClassificationID, PK] <type>,
-[StudentClassificationDescription] <type>,
-[StudentType] <type>
-);
+CONSTRAINT FK_Enrollments_StudentID
+FOREIGN KEY (StudentID)
+REFERENCES Students(StudentID),
+)
+GO
 
-CREATE TABLE [DegreeProgramPlans] (
-[DegreeProgramPlanID] <type>,
-[DegreeProgramPlanDescription] <type>,
-[DegreeID] <type>,
-[ClassificationID] <type>,
-[Major] <type>,
-[Minor] <type>,
-[Concentration] <type>,
-CONSTRAINT [FK_DegreeProgramPlans_DegreeID]
-FOREIGN KEY ([DegreeID])
-REFERENCES [Degrees]([DegreeID, PK])
+CREATE TABLE Prereqs (
+PrereqID INT IDENTITY(1,1) PRIMARY KEY,
+PrereqDescription VARCHAR(MAX)
+)
+GO
+
+CREATE TABLE MeetingTypes (
+MeetingTypeID INT IDENTITY(1,1) PRIMARY KEY,
+[MeetingTypeDescription] VARCHAR(MAX)
+)
+GO
+
+CREATE TABLE Classifications (
+ClassificationID INT IDENTITY(1,1) PRIMARY KEY,
+[StudentClassificationDescription] VARCHAR(MAX),
+[StudentType] VARCHAR(MAX)
+)
+GO
+
+CREATE TABLE DegreeProgramPlans (
+DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
+DegreeProgramPlanDescription VARCHAR(MAX),
+DegreeID INT,
+ClassificationID INT,
+Major INT,
+Minor INT,
+Concentration VARCHAR(MAX), -- What type do we want Concentration to be
+CONSTRAINT FK_DegreeProgramPlans_DegreeID
+FOREIGN KEY (DegreeID)
+REFERENCES [Degrees](DegreeID),
+
+CONSTRAINT FK_DegreeProgramPlans_ClassificationID
+FOREIGN KEY (ClassificationID)
+REFERENCES Classifications(ClassificationID)
 );
 =======
 SELECT *
