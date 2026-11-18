@@ -126,6 +126,7 @@ CREATE TABLE Professors (
 );
 GO
 
+
 -- Terrance
 CREATE TABLE DegreeProgramPlans (
 	DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
@@ -143,6 +144,7 @@ CREATE TABLE DegreeProgramPlans (
 	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID)
 );
 GO
+
 
 -- TRIRON
 CREATE TABLE CourseOfferings (
@@ -170,6 +172,8 @@ CREATE TABLE CourseOfferings (
 	FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
 );
 GO
+
+
 
 -- TRIRON
 -- EnrollmentID removed: Enrollments already stores StudentID, so having
@@ -200,6 +204,8 @@ CREATE TABLE Students (
 	FOREIGN KEY (DegreeProgramPlanID) REFERENCES DegreeProgramPlans(DegreeProgramPlanID)
 );
 GO
+
+
 
 -- TRIRON
 CREATE TABLE Enrollments (
@@ -233,23 +239,60 @@ CREATE TABLE CourseBillingLineItems (
 );
 GO
 
-SELECT * 
-FROM Professors;
+/*
+	=======================================================
+					TABLE CREATION TEST
+	======================================================= */
 
 SELECT *
-FROM [Degrees];
+FROM Departments
 
 SELECT *
-FROM Departments;
+FROM Locations
 
 SELECT *
-FROM Prereqs;
+FROM Terms
 
 SELECT *
-FROM MeetingTypes;
+FROM Courses
 
 SELECT *
+<<<<<<< HEAD
 FROM Classifications;
 
 SELECT *
 FROM StudentTerms;
+=======
+FROM MeetingTypes
+
+SELECT *
+FROM [Degrees]
+
+SELECT *
+FROM Restrictions
+
+SELECT *
+FROM Classifications
+
+SELECT *
+FROM Prereqs
+
+SELECT *
+FROM Professors
+
+SELECT *
+FROM DegreeProgramPlans
+
+SELECT *
+FROM CourseOfferings
+
+SELECT *
+FROM Students
+
+SELECT *
+FROM Enrollments
+
+SELECT *
+FROM CourseBillingLineItems
+
+>>>>>>> 8b0025cfefb7f257ebd23f5ccb344d13977641b9
