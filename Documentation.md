@@ -72,3 +72,8 @@ Some Debugging that we need to do:
 - Missing foreign keys added: CourseOfferings.MeetingTypeID now links to MeetingTypes, and Enrollments.RestrictionID now links to Restrictions.
 
 I add a second file that has these corrections so we can look over and review them 
+
+11-18-26 Creation of Separate sql files and Start of Data Scrubbing Triron James ():
+- Created a separate file to prevent both Terrance and I from having to wait for each other to push and pull the content we are each working on
+- We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to 
+
