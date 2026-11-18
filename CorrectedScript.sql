@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS Restrictions;
 DROP TABLE IF EXISTS [Degrees];
 DROP TABLE IF EXISTS MeetingTypes;
 DROP TABLE IF EXISTS Courses;
-DROP TABLE IF EXISTS Terms;
+DROP TABLE IF EXISTS StudentTerms;
 DROP TABLE IF EXISTS Locations;
 DROP TABLE IF EXISTS Departments;
 GO
@@ -35,9 +35,9 @@ SELECT *
 FROM VendorCopy;
 GO
 
-/* =========================================================
-   LOOKUP TABLES (no foreign keys) - created first
-   ========================================================= */
+/*
+   Create look up tables first (the ones without foriegn keys)
+ */
 
 -- Terrance
 CREATE TABLE Departments (
@@ -56,7 +56,7 @@ CREATE TABLE Locations (
 GO
 
 -- TRIRON
-CREATE TABLE Terms (
+CREATE TABLE StudentTerms (
 	TermID INT IDENTITY(1,1) PRIMARY KEY,
 	[Date] DATE,
 	Description VARCHAR(MAX)
@@ -109,9 +109,9 @@ CREATE TABLE Prereqs (
 );
 GO
 
-/* =========================================================
-   TABLES WITH FOREIGN KEYS - created after their parents
-   ========================================================= */
+/* 
+Tables with foriegn keys need to created after their parents
+*/
 
 -- TRIRON
 CREATE TABLE Professors (
@@ -167,7 +167,7 @@ CREATE TABLE CourseOfferings (
 	FOREIGN KEY (LocationID) REFERENCES Locations(LocationID),
 
 	CONSTRAINT FK_CourseOfferings_TermID
-	FOREIGN KEY (TermID) REFERENCES Terms(TermID)
+	FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
 );
 GO
 
@@ -250,3 +250,6 @@ FROM MeetingTypes;
 
 SELECT *
 FROM Classifications;
+
+SELECT *
+FROM StudentTerms;
