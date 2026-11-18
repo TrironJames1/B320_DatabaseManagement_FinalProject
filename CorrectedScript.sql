@@ -353,6 +353,60 @@ DROP COLUMN IF EXISTS Course_Std_Attribute_Restrictions
 ALTER TABLE [USCB Course Catalog - 11.4.26]
 DROP COLUMN IF EXISTS Course_Cohort_Restrictions
 
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Minimum_Billing;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Maximum_Billing;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Billing_Indicator;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Maximum_Contact; 
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Contact_Indicator;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Minimum_Lecture;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Maximum_Lecture;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Lecture_Indicator; 
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Minimum_Lab;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Maximum_Lab;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Lab_Indicator;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN More_Text_Narrative;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Course_Degree_Attributes;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Course_Degree_Attribute_Count;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN No_Of_Repeats_Allowed;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Maximum_Repeat_Credits;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Repeat_Status_Code;
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN Repeat_Status_Description;
+
 -- [USCB Course Offerings - 11.4.26]
 
 ALTER TABLE [USCB Course Offerings - 11.4.26]
@@ -360,3 +414,9 @@ DROP COLUMN IF EXISTS Class_Status_TBA
 
 ALTER TABLE [USCB Course Offerings - 11.4.26]
 DROP COLUMN IF EXISTS Course_Text_Narrative
+
+ALTER TABLE [USCB Course Offerings - 11.4.26]
+DROP COLUMN SUBJECT_DESC
+
+ALTER TABLE [USCB Course Offerings - 11.4.26]
+DROP COLUMN ACADEMIC_PERIOD;
