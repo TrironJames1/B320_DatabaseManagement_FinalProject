@@ -300,23 +300,63 @@ FROM CourseBillingLineItems
 						Data Scrubbing
  ============================================================ */
 
-/*
-	Dropping Columns that from the [USCB Course Catalog - 11.4.26] Table
-	Each of these columns were dropped due to them not being useful and will document this
-	within the Project documentation
-*/
-SELECT *
-FROM [USCB Course Catalog - 11.4.26]
+-- [USCB Course Catalog - 11.4.26]
 
 ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Credit_Indicator;
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Other_Minimum;
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Other_Maximum;
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Other_Indicator; 
+DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type
 
--- Test and see that the columns mentioned above have been dropped 
-SELECT *
-FROM [USCB Course Catalog - 11.4.26]
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type_Description
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Additioal_Fees_Indicator
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Prereq_Check_Method
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Coreq_Count
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Corequisite_Text
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Fee
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Area_restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Major_Minor_Concentrations_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Class_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Couse_Level_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Degree_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Program_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Campus_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_College_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Std_Attribute_Restrictions
+
+ALTER TABLE [USCB Course Catalog - 11.4.26]
+DROP COLUMN IF EXISTS Course_Cohort_Restrictions
+
+-- [USCB Course Offerings - 11.4.26]
+
+ALTER TABLE [USCB Course Offerings - 11.4.26]
+DROP COLUMN IF EXISTS Class_Status_TBA
+
+ALTER TABLE [USCB Course Offerings - 11.4.26]
+DROP COLUMN IF EXISTS Course_Text_Narrative
