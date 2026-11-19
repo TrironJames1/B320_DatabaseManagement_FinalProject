@@ -73,7 +73,14 @@ Some Debugging that we need to do:
 
 I add a second file that has these corrections so we can look over and review them 
 
-11-18-26 Creation of Separate sql files and Start of Data Scrubbing Triron James ():
+11-18-26 Creation of Separate sql files and Start of Data Scrubbing Triron James (3.5hrs):
 - Created a separate file to prevent both Terrance and I from having to wait for each other to push and pull the content we are each working on
-- We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to 
+- We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to
+
+11-19-26 Beginning of Population of Data within Tables (2hrs):
+- Used the course data population script as a reference to generate the Insert into script
+- Successfully populated the proper data into the Courses table
+- Adjusted some of the data types for the tables to allow for data population
+- All done within Triron_WorkingFile.sql
+- Plan to populate more tables later today as well
 
