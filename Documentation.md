@@ -86,7 +86,7 @@ I added a second file that has these corrections so we can look over and review 
 
 11-19-26 Populating Data: Terrance Dessaure
 Tables I am propulating:
-- [] Departments
+- [x] Departments
 - [] MeetingTypes
 - [] Restrictions
 - [] Classifications
