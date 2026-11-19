@@ -24,7 +24,7 @@ GO
 SELECT *
 FROM [USCB Course Catalog - 11.4.26]
 
-<<<<<<< HEAD
+
 --SELECT *
 --FROM [USCB Course Offerings - 11.4.26]
 
@@ -120,7 +120,7 @@ CREATE TABLE Students -- cannot finish creating this table until the StudentClas
 
 	CONSTRAINT FK_Students_StudentType
 	FOREIGN KEY (StudentType)
-	REFERENCES StudentClassifications(StudentType),
+	REFERENCES Classifications(StudentType),
 	CONSTRAINT FK_Students_EnrollmentID
 	FOREIGN KEY (EnrollmentID)
 	REFERENCES Enrollments(EnrollmentID),
@@ -132,7 +132,7 @@ CREATE TABLE Students -- cannot finish creating this table until the StudentClas
 	REFERENCES [Degrees](DegreeID),
 	CONSTRAINT FK_Students_StudentClassificationID
 	FOREIGN KEY (StudentClassificationID)
-	REFERENCES StudentClassifications(StudentClassificationID),
+	REFERENCES Classifications(ClassificationID),
 	CONSTRAINT FK_Students_DegreeProgramPlanID
 	FOREIGN KEY (DegreeProgramPlanID)
 	REFERENCES DegreeProgramPlans(DegreeProgramPlanID)
@@ -165,6 +165,9 @@ CREATE TABLE [Degrees]
 )
 GO
 
+SELECT *
+FROM Degrees
+
 -- Terrance 
 CREATE TABLE Departments (
 DepartmentID INT IDENTITY(1,1) PRIMARY KEY, 
@@ -196,24 +199,36 @@ REFERENCES Students(StudentID),
 )
 GO
 
+-- Terrance
 CREATE TABLE Prereqs (
 PrereqID INT IDENTITY(1,1) PRIMARY KEY,
 PrereqDescription VARCHAR(MAX)
 )
 GO
 
+SELECT *
+FROM Prereqs
+
+-- Terrance
 CREATE TABLE MeetingTypes (
 MeetingTypeID INT IDENTITY(1,1) PRIMARY KEY,
 [MeetingTypeDescription] VARCHAR(MAX)
 )
 GO
 
+SELECT *
+FROM MeetingTypes
+
+-- Terrance 
 CREATE TABLE Classifications (
 ClassificationID INT IDENTITY(1,1) PRIMARY KEY,
-[StudentClassificationDescription] VARCHAR(MAX),
-[StudentType] VARCHAR(MAX)
+StudentClassificationDescription VARCHAR(MAX),
+StudentType VARCHAR(MAX)
 )
 GO
+
+SELECT *
+FROM Classifications
 
 CREATE TABLE DegreeProgramPlans (
 DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
@@ -231,10 +246,10 @@ CONSTRAINT FK_DegreeProgramPlans_ClassificationID
 FOREIGN KEY (ClassificationID)
 REFERENCES Classifications(ClassificationID)
 );
-=======
+
 SELECT *
 FROM [USCB Course Offerings - 11.4.26]
 
 SELECT *
 FROM VendorCopy
->>>>>>> d26557cc4098144fe3e537b8a53aecc923c34aac
+
