@@ -77,7 +77,7 @@ I add a second file that has these corrections so we can look over and review th
 - Created a separate file to prevent both Terrance and I from having to wait for each other to push and pull the content we are each working on
 - We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to
 
-11-19-26 Beginning of Population of Data within Tables (2hrs):
+11-19-26 Beginning of Population of Data within Tables Triron James (2hrs):
 - Used the course data population script as a reference to generate the Insert into script
 - Successfully populated the proper data into the Courses table
 - Adjusted some of the data types for the tables to allow for data population
