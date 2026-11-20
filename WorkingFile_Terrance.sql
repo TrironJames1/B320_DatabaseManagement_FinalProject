@@ -306,3 +306,14 @@ WHERE Course_Description LIKE '%(%)%';
 /* =================================== 
 		END OF NEW INFORMATION
 =====================================*/ 
+
+select *
+from [STUDENT_MOCK_DATA]
+
+/* =================================== 
+		1ST YEAR STUDENT INSERT
+=====================================*/ 
+
+SELECT TOP 10 *
+FROM STUDENT_MOCK_DATA
+
