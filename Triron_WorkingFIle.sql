@@ -412,4 +412,26 @@ SELECT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Cred
 FROM [USCB Course Catalog - 11.4.26];
 
 SELECT *
-FROM Courses   
+FROM Courses 
+
+-- Prereqs
+SELECT 
+
+-- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
+-- Location ID, TermID
+INSERT INTO CourseOfferings
+SELECT CRN, Credits
+FROM [USCB Course Offerings - 11.4.26];
+	
+
+
+SELECT * 
+FROM [USCB Course Offerings - 11.4.26];
+
+INSERT INTO Prereqs
+SELECT 
+
+SELECT *
+FROM [USCB Course Catalog - 11.4.26];
+
+
