@@ -100,3 +100,15 @@ Notes about table inserts:
 - Restrictions
 - [] RestrictionID - This is our Primary key for this table
 - [] RestrictionDescription - There should be a description for each restriction and there should be an ID for each unique description
+
+  11-21-26 Populating Data: Triron James
+  Tables I am populating:
+  - [] Locations
+  - [] StudentTerms
+  - [x] Courses
+  - [] Degrees
+  - [] Professors
+  - [] CourseOfferings
+  - [] Students
+  - [] Enrollments
+  
