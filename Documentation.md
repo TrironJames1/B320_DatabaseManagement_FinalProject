@@ -71,9 +71,32 @@ Some Debugging that we need to do:
 - Two constraints had the same name. CourseBillingLineItems reused FK_Enrollments_StudentID, and constraint names have to be unique. It’s now FK_CourseBillingLineItems_StudentID.
 - Missing foreign keys added: CourseOfferings.MeetingTypeID now links to MeetingTypes, and Enrollments.RestrictionID now links to Restrictions.
 
-I add a second file that has these corrections so we can look over and review them 
+I added a second file that has these corrections so we can look over and review them 
 
-11-18-26 Creation of Separate sql files and Start of Data Scrubbing Triron James ():
+11-18-26 Creation of Separate sql files and Start of Data Scrubbing Triron James (3.5hrs):
 - Created a separate file to prevent both Terrance and I from having to wait for each other to push and pull the content we are each working on
-- We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to 
+- We each have created our on separate files and are spliting the course offerings tables and course catalogs table in half to
 
+11-19-26 Beginning of Population of Data within Tables Triron James (2hrs):
+- Used the course data population script as a reference to generate the Insert into script
+- Successfully populated the proper data into the Courses table
+- Adjusted some of the data types for the tables to allow for data population
+- All done within Triron_WorkingFile.sql
+- Plan to populate more tables later today as well
+
+11-19-26 Populating Data: Terrance Dessaure
+Tables I am propulating:
+- [x] Departments
+- [x] MeetingTypes
+- [x] Restrictions
+- [] Classifications
+- [] Prereqs
+- [] DegreeProgramPlans
+- [] CourseBillingLineItems
+
+Notes about table inserts:
+- I was successful with inserting the data into the Departments Table
+- MeetingTypes currently does not have any data in it because there is only one meeting type in the data which is face to face
+- Restrictions
+- [] RestrictionID - This is our Primary key for this table
+- [] RestrictionDescription - There should be a description for each restriction and there should be an ID for each unique description
