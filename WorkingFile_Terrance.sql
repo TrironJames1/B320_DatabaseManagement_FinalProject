@@ -262,7 +262,12 @@ INSERT INTO Classifications(
 /* ============================================================
 		Classifications insert (dependent on student data)
 =============================================================== */
+SELECT *
+FROM Classifications
 
+-- ClassificationID
+-- StudentClassificationDescription
+-- StudentType 
 
 
 /* ============================================================
@@ -317,3 +322,13 @@ from [STUDENT_MOCK_DATA]
 SELECT TOP 10 *
 FROM STUDENT_MOCK_DATA
 
+SELECT *
+FROM Students
+
+-- Changes that must be made to TRIRON's data base
+ALTER TABLE Students DROP COLUMN [Address], [State], City;
+ALTER TABLE Students ADD USCBID VARCHAR(20) NOT NULL;
+
+INSERT INTO Students (USCBID, FirstName, LastName)
+SELECT USCB_ID, first_name, last_name
+FROM STUDENT_MOCK_DATA
