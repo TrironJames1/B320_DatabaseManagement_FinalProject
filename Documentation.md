@@ -130,6 +130,10 @@ Add this column:
 When you add USCBID your going to want to move it be after students. Here are the steps to change the order:
 - In the Object Explorer, expand the database, then Tables.
 - Right-click Students and choose Design.
+
+<img width="470" height="507" alt="image" src="https://github.com/user-attachments/assets/71623243-604e-411a-a0c6-dd22a6dfe4fa" />
+
+
 - click the small box to the left of USCBID to select the row
 - Drag it up so it sits right under StudentID
 - Then Save with Ctrl + S
