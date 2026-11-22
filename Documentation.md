@@ -144,4 +144,33 @@ If SSMS says "Saving changes is not permitted":
 - Click OK and save again
 
 If you have any questions about that process or why I did something, feel free to ask.
+
+11-22-26, Triron James (4hrs):
+- Accidentally deleted the course catalog and course offerings tables and as a result had to spend some time reuploading those flat files.
+- After doing so I Removed columns from my students table:
+  . Address
+  . State
+  . City
+- I then added the USCBID column and organized it to be right after the studentID
+
+- Following this I continued with populating data into the tables:
+  - [x] Locations
+  - [x] StudentTerms
+  - [x] Courses
+  - [] Degrees 
+  - [] Professors -- In Progress
+  - [] CourseOfferings -- In Progress
+  - [] Students -- In progress, however other adjustments have been made
+  - [] Enrollments
+ 
+- Notes:
+  . Changed the data types for the RestrictionID and DegreeID columns from VARCHAR(MAX) to ints
+  . Deleted the date column out of the StudentTerms table due to the column Academic_Period_Desc within the CourseOfferings table containing both the semester and year of the term. There is no use for the date.
+  . I am running into issues populating some of these tables that have foreign keys within them due to not being able to inner join tables on values that the current table that you are working on not technically having those values yet to join on.
+
+- Questions:
+  . Why are the Major and Minor data types INT instead of VARCHAR?
+    - I am assuming that this is to assign values to each major, minor type. If so then I believe we would want to do the same thing to the Concentration column, otherwise I think the data types would all be varchar for those columns.
+ 
+  - I will continue to attempt to populate tables later today
   
