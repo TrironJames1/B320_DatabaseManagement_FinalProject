@@ -115,7 +115,7 @@ Notes about table inserts:
   - [] Students
   - [] Enrollments
 
-## 11-22-26, Terrance Dessaure:
+## 11-22-26, Terrance Dessaure (2.5 hrs):
 Making changes to the Students table:
 - I changed the Students table so it only holds the data we actually have for the 400 mock students: a USCB ID, first name and last name (I know we only need 240 but Dr. Erdi told me to do 400. We can get rid of the extra at the end)
 
@@ -143,4 +143,5 @@ If SSMS says "Saving changes is not permitted":
 - Uncheck Prevent saving changes that require table re-creation
 - Click OK and save again
 
+If you have any questions about that process or why I did something, feel free to ask.
   
