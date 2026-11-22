@@ -118,18 +118,22 @@ Notes about table inserts:
 ## 11-22-26, Terrance Dessaure:
 Making changes to the Students table:
 - I changed the Students table so it only holds the data we actually have for the 400 mock students: a USCB ID, first name and last name (I know we only need 240 but Dr. Erdi told me to do 400. We can get rid of the extra at the end)
+
 Remove these columns from your students table:
 - Address
 - State
 - City
+
 Add this column:
 - USCBID
+
 When you add USCBID your going to want to move it be after students. Here are the steps to change the order:
 - In the Object Explorer, expand the database, then Tables.
 - Right-click Students and choose Design.
 - click the small box to the left of USCBID to select the row
 - Drag it up so it sits right under StudentID
 - Then Save with Ctrl + S
+
 If SSMS says "Saving changes is not permitted":
 - Go to Tools --> Options --> Designers --> Table and Database Designers
 - Uncheck Prevent saving changes that require table re-creation
