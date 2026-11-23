@@ -200,3 +200,8 @@ What is in `DegreeProgramPlans` :
 - `Major`
 - `Minor`
 - `Concentration`
+
+11-23-26: Triron James (11am - ...):
+Notes: I agree that we can git rid of the prereq table and just have the course descriptions hold the mixture of prereq and course description. The data already does so, so I don't see any issue with this option.
+- I cleaned up my create table scripts so that there is no delay between the changes that were made while populating the data and the create table scripts.
+
