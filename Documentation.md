@@ -145,7 +145,7 @@ If SSMS says "Saving changes is not permitted":
 
 If you have any questions about that process or why I did something, feel free to ask.
 
-11-22-26, Triron James (4hrs):
+## 11-22-26, Triron James (4hrs):
 - Accidentally deleted the course catalog and course offerings tables and as a result had to spend some time reuploading those flat files.
 - After doing so I Removed columns from my students table:
   . Address
@@ -191,3 +191,12 @@ Began working on DegreeProgramPlans:
 ** Answer to previous question:
 - Major and Minor should not be INT. When I was creating the table I was probably thinking about credits and the min and max.
 - I made the change and now in DegreeProgramPlans, Major and Minor, are VARCHAR(MAX).
+
+What is in `DegreeProgramPlans` :
+- `DegreeProgramPlanID` - Primary Key
+- `DegreeProgramPlanDescription` - This is what will be (Information Science and Technology (ISAT), Computational Science (CSCI), Mathematics (MATH), Pychology (PSYC))
+- `DegreeID` - Foreign key
+- `ClassificationID` - Foreign key
+- `Major`
+- `Minor`
+- `Concentration`
