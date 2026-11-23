@@ -26,10 +26,11 @@ GO
 
 -- Imported source data
 SELECT *
-FROM [USCB Course Catalog - 11.4.26];
+FROM [USCB Course Offerings - 11.4.26];
 
 SELECT *
-FROM [USCB Course Offerings - 11.4.26];
+FROM [USCB Course Catalog - 11.4.26];
+
 
 SELECT *
 FROM VendorCopy;
@@ -51,14 +52,15 @@ CREATE TABLE Locations (
 	LocationID INT IDENTITY(1,1) PRIMARY KEY,
 	CollegeDescription VARCHAR(MAX),
 	BuildingDescription VARCHAR(MAX),
-	RoomNum INT
+	RoomNum VARCHAR(50)
 );
 GO
 
 -- TRIRON
-CREATE TABLE StudentTerms (
+CREATE TABLE StudentTerms (		-- Deleted Date due to the column Academic_Period_Desc within the CourseOfferings table 
+-- offering both the term and the year of the term
+-- Instead of the date will just input the Academic_Period_Desc into the Desction for the table
 	TermID INT IDENTITY(1,1) PRIMARY KEY,
-	[Date] DATE,
 	Description VARCHAR(MAX)
 );
 GO
@@ -116,8 +118,7 @@ Tables with foriegn keys need to created after their parents
 -- TRIRON
 CREATE TABLE Professors (
 	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
-	FirstName VARCHAR(50),
-	LastName VARCHAR(50),
+	FullName VARCHAR(50),
 	CRN VARCHAR(50),
 	DepartmentID INT NOT NULL,
 
@@ -133,7 +134,7 @@ CREATE TABLE DegreeProgramPlans (
 	DegreeProgramPlanDescription VARCHAR(MAX),
 	DegreeID INT,
 	ClassificationID INT,
-	Major INT,
+	Major INT, 
 	Minor INT,
 	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
 
@@ -155,6 +156,7 @@ CREATE TABLE CourseOfferings (
 	MeetingTypeID INT NOT NULL,
 	LocationID INT NOT NULL,
 	TermID INT NOT NULL,
+	
 
 	CONSTRAINT FK_CourseOfferings_CourseID
 	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
@@ -182,9 +184,9 @@ CREATE TABLE Students (
 	StudentID INT IDENTITY(1,1) PRIMARY KEY,
 	FirstName VARCHAR(50),
 	LastName VARCHAR(50),
-	[Address] VARCHAR(50),
-	[State] CHAR(2),
-	[City] VARCHAR(50),
+	[Address] VARCHAR(50),		-- Dropped this Column
+	[State] CHAR(2),			-- Dropped this column
+	[City] VARCHAR(50),			-- Dropped this column
 	StudentType VARCHAR(50),
 	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
 	DegreeID INT,                -- was VARCHAR(MAX); must match Degrees.DegreeID (INT)
@@ -377,6 +379,9 @@ DROP COLUMN Repeat_Status_Code;
 ALTER TABLE [USCB Course Catalog - 11.4.26]
 DROP COLUMN Repeat_Status_Description;
 
+ALTER TABLE Students
+ADD USCBID int; -- Added USCBID into the Students table
+
 /*
 -- Course Offerings Table Deletions
 -- Get rid of Billing table
@@ -403,12 +408,75 @@ DROP COLUMN ACADEMIC_PERIOD;
 			Querying For Table Inserts
 ====================================================== */
 
+-- Locations (Status: Complete)
+INSERT INTO Locations
+SELECT DISTINCT Campus_Desc, Room, Building
+FROM [USCB Course Offerings - 11.4.26];
+
+SELECT *
+FROM Locations
+
+-- MeetingTypes (Status: Complete)
+INSERT INTO MeetingTypes
+SELECT  DISTINCT Meeting_Type_Desc
+FROM [USCB Course Offerings - 11.4.26];
+
+-- StudentTerms (Status: Complete) 
+INSERT INTO StudentTerms
+SELECT DISTINCT Academic_Period_Desc
+FROM [USCB Course Offerings - 11.4.26];
+
+SELECT *
+FROM StudentTerms
+
+-- Departments (Status: Complete)
+INSERT INTO Departments
+SELECT DISTINCT Department_Description
+FROM [USCB Course Catalog - 11.4.26];
+
+SELECT *
+FROM Departments
+
+
+-- Professors (Status: In Progress)
+-- Still having trouble Populating the FullName or First and Last Name of the professors
+-- Also need to decide if it is more benificial to have CRN in professors or CourseID
+--SELECT Professor, CRN, 
+INSERT INTO Professors
+SELECT DISTINCT Professor, c.CourseID, d.DepartmentID -- This Joins the Department ID and CourseID, Next have to get the professor names and CRNs
+FROM [USCB Course Offerings - 11.4.26] AS co
+	RIGHT JOIN[USCB Course Catalog - 11.4.26] AS cc ON cc.College_Description = co.Campus_Desc
+	RIGHT JOIN Courses AS c ON c.CourseTitle = cc.Title_Short_Description
+	RIGHT JOIN Departments AS d ON cc.Department_Description = d.DepartmentDescription
+
+
+SELECT *
+FROM Professors
+SELECT Professor
+FROM [USCB Course Offerings - 11.4.26]
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+
+SELECT *
+FROM [USCB Course Catalog - 11.4.26];
+ 
+
+SELECT *
+FROM Courses
+
+SELECT *
+FROM Departments
+
+
+
+	
+
 SELECT * --Course
 FROM [USCB Course Offerings - 11.4.26];
 
--- Courses
+-- Courses (Status: Complete)
 INSERT INTO Courses
-SELECT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Credit
+SELECT DISTINCT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Credit
 FROM [USCB Course Catalog - 11.4.26];
 
 SELECT *
@@ -420,7 +488,7 @@ SELECT
 -- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
 -- Location ID, TermID
 INSERT INTO CourseOfferings
-SELECT CRN, Credits
+SELECT CRN
 FROM [USCB Course Offerings - 11.4.26];
 	
 
@@ -433,5 +501,9 @@ SELECT
 
 SELECT *
 FROM [USCB Course Catalog - 11.4.26];
+
+SELECT *
+FROM Students
+
 
 
