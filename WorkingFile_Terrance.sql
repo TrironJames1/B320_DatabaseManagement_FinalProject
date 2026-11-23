@@ -252,15 +252,18 @@ WHERE Course_Department_Restrictions IS NOT NULL
 
 
 /* ============================================================
-		Classifications insert (dependent on student data)
+					Classifications insert 
 =============================================================== */
-INSERT INTO Classifications(
-	-- StudentClasifcationDescription
-	-- Student
-);
+
+INSERT INTO Classifications (StudentClassificationDescription)
+VALUES ('Incoming'), ('Freshman'), ('Sophomore'), ('Junoir'), ('Senior');
+
+-- In final version just make sure to add Alumni in the first insert statement
+INSERT INTO Classifications (StudentClassificationDescription)
+VALUES ('Alumni');
 
 /* ============================================================
-		Classifications insert (dependent on student data)
+					Classifications insert 
 =============================================================== */
 SELECT *
 FROM Classifications
@@ -268,6 +271,7 @@ FROM Classifications
 -- ClassificationID
 -- StudentClassificationDescription
 -- StudentType 
+
 
 
 /* ============================================================
@@ -312,8 +316,37 @@ WHERE Course_Description LIKE '%(%)%';
 		END OF NEW INFORMATION
 =====================================*/ 
 
+/* =================================== 
+		DegreeProgramPlans
+=====================================*/ 
+
+
+/* =================================== 
+		DegreeProgramPlans
+=====================================*/ 
+SELECT *
+FROM DegreeProgramPlans
+
+-- DegreeProgramPlanID (Primary Key)
+-- DegreeProgramPlanDescrition
+-- DegreeID (Foriegn key)
+-- ClassificationID (Foriegn key)
+-- Major, allow null
+-- Minor, allow null
+-- Concentration, allow null
+
 select *
 from [STUDENT_MOCK_DATA]
+
+/* =================================== 
+			Enrollments
+=====================================*/ 
+
+
+/* =================================== 
+			Enrollments
+=====================================*/ 
+
 
 /* =================================== 
 		1ST YEAR STUDENT INSERT
@@ -325,9 +358,6 @@ FROM STUDENT_MOCK_DATA
 SELECT *
 FROM Students
 
--- Changes that must be made to TRIRON's data base
-ALTER TABLE Students DROP COLUMN [Address], [State], City;
-ALTER TABLE Students ADD USCBID VARCHAR(20) NOT NULL;
 
 INSERT INTO Students (USCBID, FirstName, LastName)
 SELECT USCB_ID, first_name, last_name

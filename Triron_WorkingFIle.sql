@@ -110,7 +110,7 @@ CREATE TABLE Prereqs (
 GO
 
 /* 
-Tables with foriegn keys need to created after their parents
+Tables with foreign keys need to created after their parents
 */
 
 -- TRIRON
@@ -133,8 +133,8 @@ CREATE TABLE DegreeProgramPlans (
 	DegreeProgramPlanDescription VARCHAR(MAX),
 	DegreeID INT,
 	ClassificationID INT,
-	Major INT,
-	Minor INT,
+	Major VARCHAR(MAX),
+	Minor VARCHAR(MAX),
 	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
 
 	CONSTRAINT FK_DegreeProgramPlans_DegreeID
@@ -180,12 +180,9 @@ GO
 -- Students point back at Enrollments made a circular reference.
 CREATE TABLE Students (
 	StudentID INT IDENTITY(1,1) PRIMARY KEY,
+	USCBID VARCHAR(20) NOT NULL;
 	FirstName VARCHAR(50),
 	LastName VARCHAR(50),
-	[Address] VARCHAR(50),
-	[State] CHAR(2),
-	[City] VARCHAR(50),
-	StudentType VARCHAR(50),
 	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
 	DegreeID INT,                -- was VARCHAR(MAX); must match Degrees.DegreeID (INT)
 	StudentClassificationID INT NOT NULL,
