@@ -206,3 +206,12 @@ Notes: I agree that we can git rid of the prereq table and just have the course 
 - I cleaned up my create table scripts so that there is no delay between the changes that were made while populating the data and the create table scripts.
 - I noticed that you have a typo in your classifications table "junoir" instead of "junior"
 
+Table Population Progress:
+  - [x] Locations
+  - [x] StudentTerms
+  - [x] Courses
+  - [x] Degrees  -- Populated with the 4 majors that are required but will possibly add Nursing for extra credit (ISAT, CSCI, MATH, PSYC)
+  - [] Professors -- In Progress
+  - [] CourseOfferings -- In Progress
+  - [] Students -- In progress, however other adjustments have been made
+  - [] Enrollments
