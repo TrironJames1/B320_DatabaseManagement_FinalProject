@@ -174,7 +174,7 @@ If you have any questions about that process or why I did something, feel free t
  
   - I will continue to attempt to populate tables later today
 
-## 11-23-26: (12 am - ... )
+## 11-23-26: (12 am - 2 am)
 Currently working on the Classifications table. The Classifications table holds a primary key ID, StudentClassificationDescription, and a StudentType.
 
 What is in StudentClassificationDescription:
@@ -201,7 +201,7 @@ What is in `DegreeProgramPlans` :
 - `Minor`
 - `Concentration`
 
-11-23-26: Triron James (11am - 3pm and 10pm - 11) (5hrs):
+## 11-23-26: Triron James (11am - 3pm and 10pm - 11) (5hrs):
 Notes: I agree that we can git rid of the prereq table and just have the course descriptions hold the mixture of prereq and course description. The data already does so, so I don't see any issue with this option.
 - I cleaned up my create table scripts so that there is no delay between the changes that were made while populating the data and the create table scripts.
 - I noticed that you have a typo in your classifications table "junoir" instead of "junior"
@@ -219,3 +219,16 @@ Table Population Progress:
 . Resolved git hub conflict and successfully pushed my work to github
 . Deleted CourseBIllingLineItems table from create table script and altered the enrollments table
 . Using the CourseID number instead of the CRN
+
+## 11-24-26: Terrance Dessaure (10 am - 11 am)
+We made the decision to get rid of DegreeProgramPlans because we can put that data in places that fit better.
+
+Table Progresstion:
+- [x] Departments
+- [x] MeetingTypes
+- [x] Restrictions
+- [x] Classifications
+- [x] Prereqs (Getting rid of prereqs)
+- [x] DegreeProgramPlans (Getting rid of DegreeProgramPlans)
+- [x] CourseBillingLineItems (Changed to Enrollments)
+  
