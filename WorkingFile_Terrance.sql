@@ -316,38 +316,41 @@ WHERE Course_Description LIKE '%(%)%';
 		END OF NEW INFORMATION
 =====================================*/ 
 
-/* =================================== 
-		DegreeProgramPlans
-=====================================*/ 
-
-
-/* =================================== 
-		DegreeProgramPlans
-=====================================*/ 
-SELECT *
-FROM DegreeProgramPlans
-
--- DegreeProgramPlanID (Primary Key)
--- DegreeProgramPlanDescrition
--- DegreeID (Foriegn key)
--- ClassificationID (Foriegn key)
--- Major, allow null
--- Minor, allow null
--- Concentration, allow null
 
 select *
 from [STUDENT_MOCK_DATA]
 
+SELECT *
+FROM [Degrees]
+
+SELECT *
+FROM Classifications
+
+SELECT *
+FROM Students
+
+SELECT *
+FROM Locations
+
+
+
 /* =================================== 
 			Enrollments
 =====================================*/ 
 
 
+
 /* =================================== 
 			Enrollments
 =====================================*/ 
+-- EnrollemntID, PK
+-- StudentID,FK
+-- CourseOfferingID, FK
+-- Grade
+-- RestrictionID, FK
 
-
+SELECT *
+FROM Enrollments
 /* =================================== 
 		1ST YEAR STUDENT INSERT
 =====================================*/ 

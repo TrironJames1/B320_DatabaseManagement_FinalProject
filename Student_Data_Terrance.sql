@@ -4,7 +4,7 @@
 	Assignment: Student Mock Data
 ========================================== */
 
-select *
-from [STUDENT_MOCK_DATA]
+	select *
+	from [STUDENT_MOCK_DATA]
 
 -- Create Incoming students
