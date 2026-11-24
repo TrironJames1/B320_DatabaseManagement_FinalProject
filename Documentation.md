@@ -220,7 +220,7 @@ Table Population Progress:
 . Deleted CourseBIllingLineItems table from create table script and altered the enrollments table
 . Using the CourseID number instead of the CRN
 
-## 11-24-26: Terrance Dessaure (10 am - 11 am)
+## 11-24-26: Terrance Dessaure (10 am - 2 pm)
 We made the decision to get rid of DegreeProgramPlans because we can put that data in places that fit better.
 
 Table Progresstion:
@@ -237,4 +237,23 @@ I made some changes to the students Table:
 - Then I changed the order of the Student table
 <img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/e7df99f4-5785-494a-b72c-1c4fcbf5b7a7" />
 
-  
+Working on the Professors table:
+- I think that we should leave out the CRN and the DepartmentID because we can figure out both from the Courses table.
+
+Working on the CourseOfferingTable:
+- The CourseOfferingsTable that we planned to create needs a lot of the stuff that the original USCB Course Offerings table already has:
+- The original course offering table holds some pretty valuable information:
+- - ACADEMIC_PERIOD_DESC: We have this stored in our StudentTerms table
+  - MEETING_TYPE_DESC:  This is stored in our MeetingType table
+  - CRN: We don't really need this but I think that it is good to have
+  - Professor: We have this stored in the Professors table
+  - Subject: This list the subject for each class. I was thinking that we can get rid of any of the class that we do not need, but we will need some other subjects because we need to assign student to elective classes.
+  - Course: This is another Course identifier that I think would be good to add to our own Course offerings table
+  - Section: I think we should get rid of this column
+  - Title: We can include the title of course. I don't think we have this anywhere else.
+  - Credits: This shows how many credits class is worth
+  - Building and Room: included in the Locations table
+  - Sub_Academic_Term: This is important information that I would like to include in our table as well.
+  - Days and Time: Also need to be include in the Course Offerings table.
+ 
+We can have all this information in one table called Course Offerings. The connector, the bridges our Course offerings and our students will be our Enrollments table. This Enrollments table should hold the StudendID and the CourseOfferingsID. The Primary key for the Enrollments table would be a composite key (StudentID and CourseOfferingsID). Then we can have foriegn keys that prevent a student from  enrolling in a course that does not exists.
