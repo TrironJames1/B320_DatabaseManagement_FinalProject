@@ -182,11 +182,13 @@ CREATE TABLE Students (
 	USCBID VARCHAR(20),
 	FirstName VARCHAR(50),
 	LastName VARCHAR(50),
-	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
 	DegreeID INT,                -- was VARCHAR(MAX); must match Degrees.DegreeID (INT)
 	StudentClassificationID INT NOT NULL,
-	DegreeProgramPlanID INT NOT NULL,
-
+	Major VARCHAR(MAX),
+	Minor VARCHAR(MAX),
+	Concentration VARCHAR(MAX),
+	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
+	
 	CONSTRAINT FK_Students_RestrictionID
 	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
 
@@ -194,14 +196,12 @@ CREATE TABLE Students (
 	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
 
 	CONSTRAINT FK_Students_StudentClassificationID
-	FOREIGN KEY (StudentClassificationID) REFERENCES Classifications(ClassificationID),
-
-	CONSTRAINT FK_Students_DegreeProgramPlanID
-	FOREIGN KEY (DegreeProgramPlanID) REFERENCES DegreeProgramPlans(DegreeProgramPlanID)
+	FOREIGN KEY (StudentClassificationID) REFERENCES Classifications(ClassificationID)
 );
 GO
 
-
+select *
+from Students
 
 -- TRIRON
 CREATE TABLE Enrollments (

@@ -220,7 +220,7 @@ Table Population Progress:
 . Deleted CourseBIllingLineItems table from create table script and altered the enrollments table
 . Using the CourseID number instead of the CRN
 
-## 11-24-26: Terrance Dessaure (10 am - 11 am)
+## 11-24-26: Terrance Dessaure (10 am - 2 pm)
 We made the decision to get rid of DegreeProgramPlans because we can put that data in places that fit better.
 
 Table Progresstion:
@@ -231,4 +231,58 @@ Table Progresstion:
 - [x] Prereqs (Getting rid of prereqs)
 - [x] DegreeProgramPlans (Getting rid of DegreeProgramPlans)
 - [x] CourseBillingLineItems (Changed to Enrollments)
-  
+
+I made some changes to the students Table:
+- Removed, DegreepProgramPlans and StudentType
+- Then I changed the order of the Student table
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/e7df99f4-5785-494a-b72c-1c4fcbf5b7a7" />
+
+Working on the Professors table:
+- I think that we should leave out the CRN and the DepartmentID because we can figure out both from the Courses table.
+
+Working on the CourseOfferingTable:
+- The CourseOfferingsTable that we planned to create needs a lot of the stuff that the original USCB Course Offerings table already has:
+- The original course offering table holds some pretty valuable information:
+- - ACADEMIC_PERIOD_DESC: We have this stored in our StudentTerms table
+  - MEETING_TYPE_DESC:  This is stored in our MeetingType table
+  - CRN: We don't really need this but I think that it is good to have
+  - Professor: We have this stored in the Professors table
+  - Subject: This list the subject for each class. I was thinking that we can get rid of any of the class that we do not need, but we will need some other subjects because we need to assign student to elective classes.
+  - Course: This is another Course identifier that I think would be good to add to our own Course offerings table
+  - Section: I think we should get rid of this column
+  - Title: We can include the title of course. I don't think we have this anywhere else.
+  - Credits: This shows how many credits class is worth
+  - Building and Room: included in the Locations table
+  - Sub_Academic_Term: This is important information that I would like to include in our table as well.
+  - Days and Time: Also need to be include in the Course Offerings table.
+ 
+We can have all this information in one table called Course Offerings. The connector, the bridges our Course offerings and our students will be our Enrollments table. This Enrollments table should hold the StudendID and the CourseOfferingsID. The Primary key for the Enrollments table would be a composite key (StudentID and CourseOfferingsID). Then we can have foriegn keys that prevent a student from  enrolling in a course that does not exists.
+
+11-24-26: Triron James (12am-2pm)(3pm-4pm)(3hrs):
+- Imported Mock Student Data
+- Deleted DegreeProgramPlans Table
+- Cleaned up CREATE TABLE statements
+- Input the classificationID, Major, Minor, and Concentration directly into the students table
+- Populated the students table
+. Working on professors table:
+  - I agree that CRN And DepartmentID aren't needed and can be tied back to courses. The only issue with this is that we have the departments tied to the professors table, so would we get rid of departments and only include the department description and crn columns within the courses table.
+  - This would show the assigned CRN for each course as well as the department that the course is offered through for each course.
+Total tables progress:
+- [x] Departments
+- [x] MeetingTypes
+- [x] Restrictions
+- [x] Classifications
+- [x] Locations
+- [x] StudentTerms
+- [x] Courses
+- [x] Degrees  -- Populated with the 4 majors that are required but will possibly add Nursing for extra credit (ISAT, CSCI, MATH, PSYC)
+- [x] Professors -- In Progress
+- We may possibly need another table or way to account for professors having the ability to take classes
+- We can either create a persons table that will have capabilities to access both student and professorID
+- Option 2: we include studentID into professors and leave the ability for the colunmn to be null
+- [] CourseOfferings -- In Progress. Will add CRN and DepartmentID from Professors table
+- [x] Students -- Still need to input RestrictionID, DegreeID, ClassificationID, Major, Minor, Concentration for each student. The inputting of this information starts the next sprint 3 believe
+- [] Enrollments -- In Progress
+
+. Populated the professors table
+

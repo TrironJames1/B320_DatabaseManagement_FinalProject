@@ -5,6 +5,232 @@
 
 */
 
+
+-- Dropping tables if they exist.
+-- Child tables (the ones holding foreign keys) are dropped first,
+-- otherwise SQL Server refuses to drop a table another table still points to.
+DROP TABLE IF EXISTS CourseBillingLineItems;
+DROP TABLE IF EXISTS Enrollments;
+DROP TABLE IF EXISTS Students;
+DROP TABLE IF EXISTS CourseOfferings;
+DROP TABLE IF EXISTS DegreeProgramPlans;
+DROP TABLE IF EXISTS Professors;
+DROP TABLE IF EXISTS Prereqs;
+DROP TABLE IF EXISTS Classifications;
+DROP TABLE IF EXISTS Restrictions;
+DROP TABLE IF EXISTS [Degrees];
+DROP TABLE IF EXISTS MeetingTypes;
+DROP TABLE IF EXISTS Courses;
+DROP TABLE IF EXISTS StudentTerms;
+DROP TABLE IF EXISTS Locations;
+DROP TABLE IF EXISTS Departments;
+GO
+
+-- Imported source data
+SELECT *
+FROM [USCB Course Offerings - 11.4.26];
+
+SELECT *
+FROM [USCB Course Catalog - 11.4.26];
+
+
+SELECT *
+FROM VendorCopy;
+GO
+
+/*
+   Create look up tables first (the ones without foriegn keys)
+ */
+
+-- Terrance
+CREATE TABLE Departments (
+	DepartmentID INT IDENTITY(1,1) PRIMARY KEY,
+	DepartmentDescription VARCHAR(MAX)
+);
+GO
+
+-- TRIRON
+CREATE TABLE Locations (
+	LocationID INT IDENTITY(1,1) PRIMARY KEY,
+	CollegeDescription VARCHAR(MAX),
+	BuildingDescription VARCHAR(MAX),
+	RoomNum VARCHAR(50)
+);
+GO
+
+-- TRIRON
+CREATE TABLE StudentTerms (		-- Deleted Date due to the column Academic_Period_Desc within the CourseOfferings table 
+-- offering both the term and the year of the term
+-- Instead of the date will just input the Academic_Period_Desc into the Desction for the table
+	TermID INT IDENTITY(1,1) PRIMARY KEY,
+	Description VARCHAR(MAX)
+);
+GO
+
+-- TRIRON
+CREATE TABLE Courses (
+	CourseID INT IDENTITY(1,1) PRIMARY KEY,
+	CourseTitle VARCHAR(50),
+	CourseDescription VARCHAR(MAX),
+	CreditMin INT,
+	CreditMax INT
+);
+GO
+
+-- Terrance
+CREATE TABLE MeetingTypes (
+	MeetingTypeID INT IDENTITY(1,1) PRIMARY KEY,
+	MeetingTypeDescription VARCHAR(MAX)
+);
+GO
+
+-- TRIRON
+CREATE TABLE [Degrees] (
+	DegreeID INT IDENTITY(1,1) PRIMARY KEY,
+	DegreeDescription VARCHAR(MAX)
+);
+GO
+
+-- Terrance
+CREATE TABLE Restrictions (
+	RestrictionID INT IDENTITY(1,1) PRIMARY KEY,
+	RestrictionDescription VARCHAR(MAX)
+);
+GO
+
+-- Terrance
+CREATE TABLE Classifications (
+	ClassificationID INT IDENTITY(1,1) PRIMARY KEY,
+	StudentClassificationDescription VARCHAR(MAX),
+	StudentType VARCHAR(MAX)
+);
+GO
+
+-- Terrance
+CREATE TABLE Prereqs (
+	PrereqID INT IDENTITY(1,1) PRIMARY KEY,
+	PrereqDescription VARCHAR(MAX)
+);
+GO
+
+/* 
+Tables with foreign keys need to created after their parents
+*/
+
+-- TRIRON
+CREATE TABLE Professors (
+	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
+	FullName VARCHAR(50),
+	DepartmentID INT NOT NULL,
+
+	CONSTRAINT FK_Professors_DepartmentID
+	FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
+);
+GO
+
+
+-- Terrance
+CREATE TABLE DegreeProgramPlans (
+	DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
+	DegreeProgramPlanDescription VARCHAR(MAX),
+	DegreeID INT,
+	ClassificationID INT,
+	Major VARCHAR(MAX),
+	Minor VARCHAR(MAX),
+	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
+
+	CONSTRAINT FK_DegreeProgramPlans_DegreeID
+	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
+
+	CONSTRAINT FK_DegreeProgramPlans_ClassificationID
+	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID)
+);
+GO
+
+
+-- TRIRON
+CREATE TABLE CourseOfferings (
+	CourseOfferingID INT IDENTITY(1,1) PRIMARY KEY,
+	CourseID INT NOT NULL,
+	ProfessorID INT NOT NULL,
+	CRN VARCHAR(50),
+	MeetingTypeID INT NOT NULL,
+	LocationID INT NOT NULL,
+	TermID INT NOT NULL,
+	
+
+	CONSTRAINT FK_CourseOfferings_CourseID
+	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
+
+	CONSTRAINT FK_CourseOfferings_ProfessorID
+	FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID),
+
+	CONSTRAINT FK_CourseOfferings_MeetingTypeID
+	FOREIGN KEY (MeetingTypeID) REFERENCES MeetingTypes(MeetingTypeID),
+
+	CONSTRAINT FK_CourseOfferings_LocationID
+	FOREIGN KEY (LocationID) REFERENCES Locations(LocationID),
+
+	CONSTRAINT FK_CourseOfferings_TermID
+	FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
+);
+GO
+
+
+
+-- TRIRON
+-- EnrollmentID removed: Enrollments already stores StudentID, so having
+-- Students point back at Enrollments made a circular reference.
+CREATE TABLE Students (
+	StudentID INT IDENTITY(1,1) PRIMARY KEY,
+	USCBID VARCHAR(20) NOT NULL,
+	FirstName VARCHAR(50),
+	LastName VARCHAR(50),
+	StudentClassificationID INT NOT NULL,
+	DegreeID INT,          
+	Major VARCHAR(MAX),
+	Minor VARCHAR(MAX),
+	Concentration VARCHAR(MAX),
+	RestrictionID INT,         
+
+	CONSTRAINT FK_Students_RestrictionID
+	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
+
+	CONSTRAINT FK_Students_DegreeID
+	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
+
+	CONSTRAINT FK_Students_StudentClassificationID   
+	FOREIGN KEY (StudentClassificationID) REFERENCES Classifications(ClassificationID),
+);
+GO
+
+
+
+-- TRIRON
+-- Making the assumption that all students financial responsibilities to the school are taken car of
+CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that information here
+	EnrollmentID INT IDENTITY(1,1) PRIMARY KEY,
+	StudentID INT,
+	CourseOfferingID INT NOT NULL,
+	Grade VARCHAR(20),
+	RestrictionID INT,
+	CreditHours INT,
+	CourseID INT  -- Added course ID instead of CRN
+
+	CONSTRAINT FK_Enrollments_StudentID
+	FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+
+	CONSTRAINT FK_Enrollments_CourseOfferingID
+	FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID),
+
+	CONSTRAINT FK_Enrollments_RestrictionID
+	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
+
+	CONSTRAINT FK_Enrollments_CourseID
+	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+);
+GO
+
 -- Data Scrubbing
 
 -- Course offering start at column "Title"
@@ -316,38 +542,109 @@ WHERE Course_Description LIKE '%(%)%';
 		END OF NEW INFORMATION
 =====================================*/ 
 
-/* =================================== 
-		DegreeProgramPlans
-=====================================*/ 
-
-
-/* =================================== 
-		DegreeProgramPlans
-=====================================*/ 
-SELECT *
-FROM DegreeProgramPlans
-
--- DegreeProgramPlanID (Primary Key)
--- DegreeProgramPlanDescrition
--- DegreeID (Foriegn key)
--- ClassificationID (Foriegn key)
--- Major, allow null
--- Minor, allow null
--- Concentration, allow null
 
 select *
 from [STUDENT_MOCK_DATA]
 
+SELECT *
+FROM [Degrees]
+
+SELECT *
+FROM Classifications
+
+SELECT *
+FROM Students
+
+SELECT *
+FROM Locations
+
+/* ===================================
+		CourseOfferings
+======================================*/
+SELECT *
+FROM Courses
+
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+/* ===================================
+		CourseOfferings
+======================================*/
+SELECT *
+FROM CourseOfferings
+
+-- Each CourseOfferings row  should have:
+-- A primary key `CourseOfferingID`
+-- CourseID
+-- ProffesorID
+-- CRN 
+-- MeetingType
+-- LocationID (Tell where the class is located)
+-- What term is this course in
+SELECT *
+FROM StudentTerms
+
+ALTER TABLE StudentTerms
+DROP COLUMN IF EXISTS [Date]
+
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+/* =================================== 
+			Professors
+=====================================*/ 
+INSERT INTO Professors (FirstName, LastName)
+SELECT DISTINCT
+    LTRIM(RTRIM(SUBSTRING(Professor, CHARINDEX(',', Professor) + 1, LEN(Professor)))),
+    LTRIM(RTRIM(LEFT(Professor, CHARINDEX(',', Professor) - 1)))
+FROM [USCB Course Offerings - 11.4.26] 
+WHERE Professor LIKE '%,%';
+
+/* =================================== 
+			Professors
+=====================================*/ 
+-- I believe we should leave out the CRN and the Department Id because if we realy want to include the CRN we can and
+-- we dont need a department for the professor because can figure out the department from the Courses table.
+
+SELECT
+    Professor,
+    LEFT(Professor, CHARINDEX(' ', Professor) - 1) AS FirstName,
+    SUBSTRING(Professor, CHARINDEX(' ', Professor) + 1, LEN(Professor)) AS LastName
+
+FROM [USCB Course Offerings - 11.4.26]
+WHERE Professor LIKE '% %';
+
+SELECT *
+FROM Professors
+
+SELECT *
+FROM Departments
+
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
+
+SELECT *
+FROM Courses
+
+
 /* =================================== 
 			Enrollments
 =====================================*/ 
 
 
+
 /* =================================== 
 			Enrollments
 =====================================*/ 
+-- EnrollemntID, PK
+-- StudentID,FK
+-- CourseOfferingID, FK
+-- Grade
+-- RestrictionID, FK
 
-
+SELECT *
+FROM Enrollments
 /* =================================== 
 		1ST YEAR STUDENT INSERT
 =====================================*/ 
