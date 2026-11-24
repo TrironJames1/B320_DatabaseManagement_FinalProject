@@ -112,14 +112,13 @@ CREATE TABLE Prereqs (
 GO
 
 /* 
-Tables with foriegn keys need to created after their parents
+Tables with foreign keys need to created after their parents
 */
 
 -- TRIRON
 CREATE TABLE Professors (
 	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
 	FullName VARCHAR(50),
-	CRN VARCHAR(50),
 	DepartmentID INT NOT NULL,
 
 	CONSTRAINT FK_Professors_DepartmentID
@@ -134,8 +133,8 @@ CREATE TABLE DegreeProgramPlans (
 	DegreeProgramPlanDescription VARCHAR(MAX),
 	DegreeID INT,
 	ClassificationID INT,
-	Major INT, 
-	Minor INT,
+	Major VARCHAR(MAX),
+	Minor VARCHAR(MAX),
 	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
 
 	CONSTRAINT FK_DegreeProgramPlans_DegreeID
@@ -182,12 +181,9 @@ GO
 -- Students point back at Enrollments made a circular reference.
 CREATE TABLE Students (
 	StudentID INT IDENTITY(1,1) PRIMARY KEY,
+	USCBID VARCHAR(20) NOT NULL,
 	FirstName VARCHAR(50),
 	LastName VARCHAR(50),
-	[Address] VARCHAR(50),		-- Dropped this Column
-	[State] CHAR(2),			-- Dropped this column
-	[City] VARCHAR(50),			-- Dropped this column
-	StudentType VARCHAR(50),
 	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
 	DegreeID INT,                -- was VARCHAR(MAX); must match Degrees.DegreeID (INT)
 	StudentClassificationID INT NOT NULL,
@@ -408,7 +404,10 @@ DROP COLUMN ACADEMIC_PERIOD;
 			Querying For Table Inserts
 ====================================================== */
 
--- Locations (Status: Complete)
+
+/* =======================================
+		 Locations (Status: Complete)
+  ========================================= */
 INSERT INTO Locations
 SELECT DISTINCT Campus_Desc, Room, Building
 FROM [USCB Course Offerings - 11.4.26];
@@ -437,17 +436,20 @@ FROM [USCB Course Catalog - 11.4.26];
 SELECT *
 FROM Departments
 
-
--- Professors (Status: In Progress)
+/* ===================================
+	 Professors (Status: In Progress)
+   ==================================== */
 -- Still having trouble Populating the FullName or First and Last Name of the professors
 -- Also need to decide if it is more benificial to have CRN in professors or CourseID
 --SELECT Professor, CRN, 
+-- Dont need CRN in the professors table because courseofferings has the professorID in it so for each course offering there will be atleast one professorID
+-- Removing CRN, FK
 INSERT INTO Professors
-SELECT DISTINCT Professor, c.CourseID, d.DepartmentID -- This Joins the Department ID and CourseID, Next have to get the professor names and CRNs
+SELECT DISTINCT Professor, d.DepartmentID -- This Joins the Department ID and CourseID, Next have to get the professor names and CRNs
 FROM [USCB Course Offerings - 11.4.26] AS co
-	RIGHT JOIN[USCB Course Catalog - 11.4.26] AS cc ON cc.College_Description = co.Campus_Desc
-	RIGHT JOIN Courses AS c ON c.CourseTitle = cc.Title_Short_Description
-	RIGHT JOIN Departments AS d ON cc.Department_Description = d.DepartmentDescription
+	INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON co.Campus_Desc = cc.College_Description
+	INNER JOIN Departments AS d ON cc.Department_Description = d.DepartmentDescription
+	
 
 
 SELECT *
@@ -474,17 +476,25 @@ FROM Departments
 SELECT * --Course
 FROM [USCB Course Offerings - 11.4.26];
 
--- Courses (Status: Complete)
+/* ================================
+		Courses (Status: Complete)
+ =================================== */
 INSERT INTO Courses
 SELECT DISTINCT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Credit
 FROM [USCB Course Catalog - 11.4.26];
 
+-- Courses (Test)
 SELECT *
 FROM Courses 
 
--- Prereqs
+/* ================================
+				Prereqs -- Getting rid of prereqs and putting into coursedescription column within courses
+  ================================= */
 SELECT 
 
+/* ===================================
+			CourseOfferings
+  ==================================== */
 -- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
 -- Location ID, TermID
 INSERT INTO CourseOfferings
@@ -496,8 +506,7 @@ FROM [USCB Course Offerings - 11.4.26];
 SELECT * 
 FROM [USCB Course Offerings - 11.4.26];
 
-INSERT INTO Prereqs
-SELECT 
+
 
 SELECT *
 FROM [USCB Course Catalog - 11.4.26];
@@ -505,5 +514,51 @@ FROM [USCB Course Catalog - 11.4.26];
 SELECT *
 FROM Students
 
+/* ===========================
+		Restrictions
+ ============================= */
+INSERT INTO Restrictions(
+	RestrictionDescription
+)
 
+SELECT Course_Major_Minor_Concentration_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Major_Minor_Concentration_Restrictions is not null 
+
+UNION
+
+SELECT Course_Level_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Level_Restrictions is not null 
+
+-- Restrictions (Test)
+SELECT *
+FROM Restrictions
+
+/* ============================================================
+					Classifications insert 
+=============================================================== */
+
+INSERT INTO Classifications (StudentClassificationDescription)
+VALUES ('Incoming'), ('Freshman'), ('Sophomore'), ('Junior'), ('Senior'), ('Alumni');
+
+-- Classifications (Test)
+SELECT *
+FROM Classifications
+
+-- ClassificationID
+-- StudentClassificationDescription
+-- StudentType 
+
+/* ===========================================
+			Degrees (Status: Complete)
+	========================================== */
+
+-- Assigning values based off of the student majors that we will be mocking
+INSERT INTO [Degrees] (DegreeDescription)
+VALUES ('ISAT'), ('CSCI'), ('MATH'), ('PSYC')
+
+-- Degrees (Test)
+SELECT *
+FROM [Degrees]
 
