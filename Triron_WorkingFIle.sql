@@ -206,12 +206,15 @@ GO
 
 
 -- TRIRON
-CREATE TABLE Enrollments (
+-- Making the assumption that all students financial responsibilities to the school are taken car of
+CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that information here
 	EnrollmentID INT IDENTITY(1,1) PRIMARY KEY,
 	StudentID INT,
 	CourseOfferingID INT NOT NULL,
 	Grade VARCHAR(20),
 	RestrictionID INT,
+	CreditHours INT,
+	CourseID INT  -- Added course ID instead of CRN
 
 	CONSTRAINT FK_Enrollments_StudentID
 	FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
@@ -220,23 +223,14 @@ CREATE TABLE Enrollments (
 	FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID),
 
 	CONSTRAINT FK_Enrollments_RestrictionID
-	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID)
+	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
+
+	CONSTRAINT FK_Enrollments_CourseID
+	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 GO
 
--- Terrance
-CREATE TABLE CourseBillingLineItems (
-	CourseBillingLineItemsID INT IDENTITY(1,1) PRIMARY KEY,
-	StudentID INT,
-	[CRN/CourseID] INT, -- * consider CourseOfferingID INT with an FK to CourseOfferings
-	CreditHours INT,
-
-	-- renamed: FK_Enrollments_StudentID was already used by Enrollments
-	CONSTRAINT FK_CourseBillingLineItems_StudentID
-	FOREIGN KEY (StudentID) REFERENCES Students(StudentID)
-);
-GO
-/* =========================================================
+/* ========================================================
 						Data Scrubbing
  ============================================================ */
 /*
@@ -415,12 +409,16 @@ FROM [USCB Course Offerings - 11.4.26];
 SELECT *
 FROM Locations
 
--- MeetingTypes (Status: Complete)
+/* ===================================
+	MeetingTypes (Status: Complete)
+   =================================== */
 INSERT INTO MeetingTypes
 SELECT  DISTINCT Meeting_Type_Desc
 FROM [USCB Course Offerings - 11.4.26];
 
--- StudentTerms (Status: Complete) 
+/* =====================================
+	StudentTerms (Status: Complete) 
+========================================= */
 INSERT INTO StudentTerms
 SELECT DISTINCT Academic_Period_Desc
 FROM [USCB Course Offerings - 11.4.26];
@@ -428,7 +426,9 @@ FROM [USCB Course Offerings - 11.4.26];
 SELECT *
 FROM StudentTerms
 
--- Departments (Status: Complete)
+/* ==================================
+	 Departments (Status: Complete)
+ ===================================== */
 INSERT INTO Departments
 SELECT DISTINCT Department_Description
 FROM [USCB Course Catalog - 11.4.26];
@@ -562,3 +562,8 @@ VALUES ('ISAT'), ('CSCI'), ('MATH'), ('PSYC')
 SELECT *
 FROM [Degrees]
 
+/* =======================================
+		Enrollments (Status: In Progress)
+========================================== */
+SELECT *
+FROM [USCB Course Catalog - 11.4.26];
