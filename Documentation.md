@@ -257,3 +257,32 @@ Working on the CourseOfferingTable:
   - Days and Time: Also need to be include in the Course Offerings table.
  
 We can have all this information in one table called Course Offerings. The connector, the bridges our Course offerings and our students will be our Enrollments table. This Enrollments table should hold the StudendID and the CourseOfferingsID. The Primary key for the Enrollments table would be a composite key (StudentID and CourseOfferingsID). Then we can have foriegn keys that prevent a student from  enrolling in a course that does not exists.
+
+11-24-26: Triron James (12am-2pm)(3pm-4pm)(3hrs):
+- Imported Mock Student Data
+- Deleted DegreeProgramPlans Table
+- Cleaned up CREATE TABLE statements
+- Input the classificationID, Major, Minor, and Concentration directly into the students table
+- Populated the students table
+. Working on professors table:
+  - I agree that CRN And DepartmentID aren't needed and can be tied back to courses. The only issue with this is that we have the departments tied to the professors table, so would we get rid of departments and only include the department description and crn columns within the courses table.
+  - This would show the assigned CRN for each course as well as the department that the course is offered through for each course.
+Total tables progress:
+- [x] Departments
+- [x] MeetingTypes
+- [x] Restrictions
+- [x] Classifications
+- [x] Locations
+- [x] StudentTerms
+- [x] Courses
+- [x] Degrees  -- Populated with the 4 majors that are required but will possibly add Nursing for extra credit (ISAT, CSCI, MATH, PSYC)
+- [x] Professors -- In Progress
+- We may possibly need another table or way to account for professors having the ability to take classes
+- We can either create a persons table that will have capabilities to access both student and professorID
+- Option 2: we include studentID into professors and leave the ability for the colunmn to be null
+- [] CourseOfferings -- In Progress. Will add CRN and DepartmentID from Professors table
+- [x] Students -- Still need to input RestrictionID, DegreeID, ClassificationID, Major, Minor, Concentration for each student. The inputting of this information starts the next sprint 3 believe
+- [] Enrollments -- In Progress
+
+. Populated the professors table
+
