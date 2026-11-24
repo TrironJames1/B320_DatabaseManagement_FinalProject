@@ -201,7 +201,7 @@ What is in `DegreeProgramPlans` :
 - `Minor`
 - `Concentration`
 
-11-23-26: Triron James (11am - ...):
+11-23-26: Triron James (11am - 3pm and 10pm - 11) (5hrs):
 Notes: I agree that we can git rid of the prereq table and just have the course descriptions hold the mixture of prereq and course description. The data already does so, so I don't see any issue with this option.
 - I cleaned up my create table scripts so that there is no delay between the changes that were made while populating the data and the create table scripts.
 - I noticed that you have a typo in your classifications table "junoir" instead of "junior"
@@ -214,4 +214,8 @@ Table Population Progress:
   - [] Professors -- In Progress
   - [] CourseOfferings -- In Progress
   - [] Students -- In progress, however other adjustments have been made
-  - [] Enrollments
+  - [] Enrollments -- In Progress
+
+. Resolved git hub conflict and successfully pushed my work to github
+. Deleted CourseBIllingLineItems table from create table script and altered the enrollments table
+. Using the CourseID number instead of the CRN
