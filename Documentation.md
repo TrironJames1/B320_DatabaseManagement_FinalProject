@@ -231,4 +231,10 @@ Table Progresstion:
 - [x] Prereqs (Getting rid of prereqs)
 - [x] DegreeProgramPlans (Getting rid of DegreeProgramPlans)
 - [x] CourseBillingLineItems (Changed to Enrollments)
+
+I made some changes to the students Table:
+- Removed, DegreepProgramPlans and StudentType
+- Then I changed the order of the Student table
+<img width="1919" height="1079" alt="image" src="https://github.com/user-attachments/assets/e7df99f4-5785-494a-b72c-1c4fcbf5b7a7" />
+
   
