@@ -104,12 +104,6 @@ CREATE TABLE Classifications (
 );
 GO
 
--- Terrance
-CREATE TABLE Prereqs (
-	PrereqID INT IDENTITY(1,1) PRIMARY KEY,
-	PrereqDescription VARCHAR(MAX)
-);
-GO
 
 /* 
 Tables with foreign keys need to created after their parents
@@ -118,30 +112,8 @@ Tables with foreign keys need to created after their parents
 -- TRIRON
 CREATE TABLE Professors (
 	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
-	FullName VARCHAR(50),
-	DepartmentID INT NOT NULL,
+	FullName VARCHAR(50)
 
-	CONSTRAINT FK_Professors_DepartmentID
-	FOREIGN KEY (DepartmentID) REFERENCES Departments(DepartmentID)
-);
-GO
-
-
--- Terrance
-CREATE TABLE DegreeProgramPlans (
-	DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
-	DegreeProgramPlanDescription VARCHAR(MAX),
-	DegreeID INT,
-	ClassificationID INT,
-	Major VARCHAR(MAX),
-	Minor VARCHAR(MAX),
-	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
-
-	CONSTRAINT FK_DegreeProgramPlans_DegreeID
-	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
-
-	CONSTRAINT FK_DegreeProgramPlans_ClassificationID
-	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID)
 );
 GO
 
@@ -186,8 +158,11 @@ CREATE TABLE Students (
 	LastName VARCHAR(50),
 	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
 	DegreeID INT,                -- was VARCHAR(MAX); must match Degrees.DegreeID (INT)
-	StudentClassificationID INT NOT NULL,
-	DegreeProgramPlanID INT NOT NULL,
+	ClassificationID INT,
+	Major VARCHAR(50),
+	Minor VARCHAR(50),
+	Concentration VARCHAR(50)
+	
 
 	CONSTRAINT FK_Students_RestrictionID
 	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
@@ -195,11 +170,10 @@ CREATE TABLE Students (
 	CONSTRAINT FK_Students_DegreeID
 	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
 
-	CONSTRAINT FK_Students_StudentClassificationID
-	FOREIGN KEY (StudentClassificationID) REFERENCES Classifications(ClassificationID),
+	CONSTRAINT FK_Students_ClassificationID
+	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID),
 
-	CONSTRAINT FK_Students_DegreeProgramPlanID
-	FOREIGN KEY (DegreeProgramPlanID) REFERENCES DegreeProgramPlans(DegreeProgramPlanID)
+	
 );
 GO
 
@@ -229,6 +203,7 @@ CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that i
 	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 GO
+
 
 /* ========================================================
 						Data Scrubbing
@@ -264,134 +239,134 @@ GO
 
 -- [USCB Course Catalog - 11.4.26]
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type_Description
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Prereq_Waiver_Authorization_Type_Description
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Additioal_Fees_Indicator
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Additioal_Fees_Indicator
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Prereq_Check_Method
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Prereq_Check_Method
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Coreq_Count
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Coreq_Count
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Corequisite_Text
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Corequisite_Text
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Fee
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Fee
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Area_restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Area_restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Major_Minor_Concentrations_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Major_Minor_Concentrations_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Class_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Class_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Couse_Level_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Couse_Level_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Degree_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Degree_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Program_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Program_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Campus_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Campus_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_College_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_College_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Std_Attribute_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Std_Attribute_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN IF EXISTS Course_Cohort_Restrictions
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Cohort_Restrictions
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Minimum_Billing;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Minimum_Billing;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Maximum_Billing;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Maximum_Billing;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Billing_Indicator;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Billing_Indicator;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Maximum_Contact; 
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Maximum_Contact; 
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Contact_Indicator;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Contact_Indicator;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Minimum_Lecture;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Minimum_Lecture;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Maximum_Lecture;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Maximum_Lecture;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Lecture_Indicator; 
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Lecture_Indicator; 
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Minimum_Lab;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Minimum_Lab;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Maximum_Lab;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Maximum_Lab;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Lab_Indicator;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Lab_Indicator;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN More_Text_Narrative;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN More_Text_Narrative;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Course_Degree_Attributes;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Course_Degree_Attributes;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Course_Degree_Attribute_Count;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Course_Degree_Attribute_Count;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN No_Of_Repeats_Allowed;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN No_Of_Repeats_Allowed;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Maximum_Repeat_Credits;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Maximum_Repeat_Credits;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Repeat_Status_Code;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Repeat_Status_Code;
 
-ALTER TABLE [USCB Course Catalog - 11.4.26]
-DROP COLUMN Repeat_Status_Description;
+--ALTER TABLE [USCB Course Catalog - 11.4.26]
+--DROP COLUMN Repeat_Status_Description;
 
-ALTER TABLE Students
-ADD USCBID int; -- Added USCBID into the Students table
+--ALTER TABLE Students
+--ADD USCBID int; -- Added USCBID into the Students table
 
-/*
--- Course Offerings Table Deletions
--- Get rid of Billing table
--- Course Offerings
--- I am beginning at the start and stopping at the column named "Section" within the Course Offerings table
-*/
+--/*
+---- Course Offerings Table Deletions
+---- Get rid of Billing table
+---- Course Offerings
+---- I am beginning at the start and stopping at the column named "Section" within the Course Offerings table
+--*/
 
--- [USCB Course Offerings - 11.4.26]
+---- [USCB Course Offerings - 11.4.26]
 
-ALTER TABLE [USCB Course Offerings - 11.4.26]
-DROP COLUMN IF EXISTS Class_Status_TBA
+--ALTER TABLE [USCB Course Offerings - 11.4.26]
+--DROP COLUMN IF EXISTS Class_Status_TBA
 
-ALTER TABLE [USCB Course Offerings - 11.4.26]
-DROP COLUMN IF EXISTS Course_Text_Narrative
+--ALTER TABLE [USCB Course Offerings - 11.4.26]
+--DROP COLUMN IF EXISTS Course_Text_Narrative
 
-ALTER TABLE [USCB Course Offerings - 11.4.26]
-DROP COLUMN SUBJECT_DESC
+--ALTER TABLE [USCB Course Offerings - 11.4.26]
+--DROP COLUMN SUBJECT_DESC
 
-ALTER TABLE [USCB Course Offerings - 11.4.26]
-DROP COLUMN ACADEMIC_PERIOD;
+--ALTER TABLE [USCB Course Offerings - 11.4.26]
+--DROP COLUMN ACADEMIC_PERIOD;
 
 /*
 ======================================================
@@ -437,44 +412,15 @@ SELECT *
 FROM Departments
 
 /* ===================================
-	 Professors (Status: In Progress)
+	 Professors (Status: Complete)
    ==================================== */
--- Still having trouble Populating the FullName or First and Last Name of the professors
--- Also need to decide if it is more benificial to have CRN in professors or CourseID
---SELECT Professor, CRN, 
--- Dont need CRN in the professors table because courseofferings has the professorID in it so for each course offering there will be atleast one professorID
--- Removing CRN, FK
+
 INSERT INTO Professors
-SELECT DISTINCT Professor, d.DepartmentID -- This Joins the Department ID and CourseID, Next have to get the professor names and CRNs
-FROM [USCB Course Offerings - 11.4.26] AS co
-	INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON co.Campus_Desc = cc.College_Description
-	INNER JOIN Departments AS d ON cc.Department_Description = d.DepartmentDescription
-	
-
-
-SELECT *
-FROM Professors
-SELECT Professor
+(
+	FullName
+)
+SELECT DISTINCT Professor 
 FROM [USCB Course Offerings - 11.4.26]
-SELECT *
-FROM [USCB Course Offerings - 11.4.26]
-
-SELECT *
-FROM [USCB Course Catalog - 11.4.26];
- 
-
-SELECT *
-FROM Courses
-
-SELECT *
-FROM Departments
-
-
-
-	
-
-SELECT * --Course
-FROM [USCB Course Offerings - 11.4.26];
 
 /* ================================
 		Courses (Status: Complete)
@@ -487,13 +433,8 @@ FROM [USCB Course Catalog - 11.4.26];
 SELECT *
 FROM Courses 
 
-/* ================================
-				Prereqs -- Getting rid of prereqs and putting into coursedescription column within courses
-  ================================= */
-SELECT 
-
 /* ===================================
-			CourseOfferings
+			CourseOfferings -- Terrance is taking care of this table
   ==================================== */
 -- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
 -- Location ID, TermID
@@ -515,7 +456,7 @@ SELECT *
 FROM Students
 
 /* ===========================
-		Restrictions
+		Restrictions (Status: Completed)
  ============================= */
 INSERT INTO Restrictions(
 	RestrictionDescription
@@ -524,19 +465,51 @@ INSERT INTO Restrictions(
 SELECT Course_Major_Minor_Concentration_Restrictions
 FROM [USCB Course Catalog - 11.4.26]
 WHERE Course_Major_Minor_Concentration_Restrictions is not null 
-
 UNION
-
 SELECT Course_Level_Restrictions
 FROM [USCB Course Catalog - 11.4.26]
 WHERE Course_Level_Restrictions is not null 
-
+UNION
+SELECT Course_Department_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Department_Restrictions is not null 
+UNION
+SELECT Course_Class_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Class_Restrictions is not null
+UNION
+SELECT Course_Degree_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Degree_Restrictions is not null
+UNION
+SELECT Course_Program_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Program_Restrictions is not null
+UNION
+SELECT Course_Campus_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Campus_Restrictions is not null
+UNION
+SELECT Course_College_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_College_Restrictions is not null
+UNION 
+SELECT Course_Std_Attribute_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Std_Attribute_Restrictions is not null
+UNION 
+SELECT Course_Cohort_Restrictions
+FROM [USCB Course Catalog - 11.4.26]
+WHERE Course_Cohort_Restrictions is not null
 -- Restrictions (Test)
 SELECT *
 FROM Restrictions
 
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
+
 /* ============================================================
-					Classifications insert 
+					Classifications insert (Status: Completed)
 =============================================================== */
 
 INSERT INTO Classifications (StudentClassificationDescription)
@@ -563,7 +536,26 @@ SELECT *
 FROM [Degrees]
 
 /* =======================================
-		Enrollments (Status: In Progress)
+		Enrollments (Status: In Progress) -- FINISH TN
 ========================================== */
 SELECT *
 FROM [USCB Course Catalog - 11.4.26];
+
+
+/* =================================== 
+		1ST YEAR STUDENT INSERT
+=====================================*/ 
+
+SELECT TOP 10 *
+FROM STUDENT_MOCK_DATA
+
+SELECT *
+FROM Students
+
+
+INSERT INTO Students (USCBID, FirstName, LastName)
+SELECT USCB_ID, first_name, last_name
+FROM STUDENT_MOCK_DATA
+
+
+
