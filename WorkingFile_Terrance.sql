@@ -129,50 +129,27 @@ CREATE TABLE Professors (
 GO
 
 
--- Terrance
-CREATE TABLE DegreeProgramPlans (
-	DegreeProgramPlanID INT IDENTITY(1,1) PRIMARY KEY,
-	DegreeProgramPlanDescription VARCHAR(MAX),
-	DegreeID INT,
-	ClassificationID INT,
-	Major VARCHAR(MAX),
-	Minor VARCHAR(MAX),
-	Concentration VARCHAR(MAX), -- What type do we want Concentration to be
-
-	CONSTRAINT FK_DegreeProgramPlans_DegreeID
-	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
-
-	CONSTRAINT FK_DegreeProgramPlans_ClassificationID
-	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID)
-);
-GO
-
 
 -- TRIRON
 CREATE TABLE CourseOfferings (
 	CourseOfferingID INT IDENTITY(1,1) PRIMARY KEY,
 	CourseID INT NOT NULL,
-	ProfessorID INT NOT NULL,
-	CRN VARCHAR(50),
-	MeetingTypeID INT NOT NULL,
-	LocationID INT NOT NULL,
-	TermID INT NOT NULL,
-	
+	Term             VARCHAR(50),
+    Professor        VARCHAR(100),
+    [Subject]        VARCHAR(20),
+    CourseNumber     VARCHAR(20),
+    Section          VARCHAR(20),
+    Title            VARCHAR(200),
+    Credits          VARCHAR(10),
+    MeetingTypeDesc  VARCHAR(50),
+    [Days]           VARCHAR(20),
+    [Time]           VARCHAR(50),
+    LocationID       INT NULL,
 
-	CONSTRAINT FK_CourseOfferings_CourseID
-	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
-
-	CONSTRAINT FK_CourseOfferings_ProfessorID
-	FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID),
-
-	CONSTRAINT FK_CourseOfferings_MeetingTypeID
-	FOREIGN KEY (MeetingTypeID) REFERENCES MeetingTypes(MeetingTypeID),
-
-	CONSTRAINT FK_CourseOfferings_LocationID
-	FOREIGN KEY (LocationID) REFERENCES Locations(LocationID),
-
-	CONSTRAINT FK_CourseOfferings_TermID
-	FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
+    CONSTRAINT FK_CourseOfferings_CourseID
+        FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
+    CONSTRAINT FK_CourseOfferings_LocationID
+        FOREIGN KEY (LocationID) REFERENCES Locations(LocationID)
 );
 GO
 
@@ -208,26 +185,19 @@ GO
 
 -- TRIRON
 -- Making the assumption that all students financial responsibilities to the school are taken car of
-CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that information here
-	EnrollmentID INT IDENTITY(1,1) PRIMARY KEY,
-	StudentID INT,
-	CourseOfferingID INT NOT NULL,
-	Grade VARCHAR(20),
-	RestrictionID INT,
-	CreditHours INT,
-	CourseID INT  -- Added course ID instead of CRN
+CREATE TABLE Enrollments (
+    EnrollmentID     INT IDENTITY(1,1) PRIMARY KEY,
+    StudentID        INT NOT NULL,
+    CourseOfferingID INT NOT NULL,
 
-	CONSTRAINT FK_Enrollments_StudentID
-	FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+    CONSTRAINT UQ_Enrollments_Student_Course
+        UNIQUE (StudentID, CourseOfferingID),
 
-	CONSTRAINT FK_Enrollments_CourseOfferingID
-	FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID),
+    CONSTRAINT FK_Enrollments_StudentID
+        FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
 
-	CONSTRAINT FK_Enrollments_RestrictionID
-	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
-
-	CONSTRAINT FK_Enrollments_CourseID
-	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+    CONSTRAINT FK_Enrollments_CourseOfferingID
+        FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID)
 );
 GO
 
@@ -561,8 +531,34 @@ FROM Locations
 /* ===================================
 		CourseOfferings
 ======================================*/
+ 
+INSERT INTO CourseOfferings
+    (CourseID, Term, Professor, [Subject], CourseNumber, Section,
+     Title, Credits, MeetingTypeDesc, [Days], [Time], LocationID)
+SELECT DISTINCT
+    c.CourseID, col.ACADEMIC_PERIOD_DESC, col.Professor, col.Subject,
+    cc.Course_Number, col.Section, col.Title, col.Credits,
+    col.MEETING_TYPE_DESC, col.Days, col.Time,
+    l.LocationID
+FROM [USCB Course Offerings - 11.4.26] AS col
+INNER JOIN Courses AS c ON col.Title = c.CourseTitle
+INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON c.CourseTitle = cc.Title_Short_Description
+LEFT JOIN Locations AS l
+    ON  l.CollegeDescription  = col.CAMPUS_DESC 
+    AND l.BuildingDescription = col.Building
+    AND l.RoomNum             = col.Room
+
+ALTER TABLE [USCB Course Offerings - 11.4.26]
+ADD CourseOfferingID INT IDENTITY(1,1) PRIMARY KEY;
+
 SELECT *
 FROM Courses
+
+SELECT *
+FROM StudentTerms
+
+SELECT *
+FROM Locations
 
 SELECT *
 FROM [USCB Course Offerings - 11.4.26]
