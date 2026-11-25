@@ -9,7 +9,7 @@
 -- otherwise SQL Server refuses to drop a table another table still points to.
 DROP TABLE IF EXISTS CourseBillingLineItems;
 DROP TABLE IF EXISTS Enrollments;
-DROP TABLE IF EXISTS Students;
+DROP TABLE IF EXISTS Persons;
 DROP TABLE IF EXISTS CourseOfferings;
 DROP TABLE IF EXISTS DegreeProgramPlans;
 DROP TABLE IF EXISTS Professors;
@@ -110,39 +110,40 @@ Tables with foreign keys need to created after their parents
 */
 
 -- TRIRON
-CREATE TABLE Professors (
-	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
-	FullName VARCHAR(50)
+--CREATE TABLE Professors (
+--	ProfessorID INT IDENTITY(1,1) PRIMARY KEY,
+--	FirstName VARCHAR(50),
+--	LastName VARCHAR(50)
 
-);
-GO
+--);
+--GO
 
 
 -- TRIRON
 CREATE TABLE CourseOfferings (
 	CourseOfferingID INT IDENTITY(1,1) PRIMARY KEY,
-	CourseID INT NOT NULL,
-	ProfessorID INT NOT NULL,
-	CRN VARCHAR(50),
-	MeetingTypeID INT NOT NULL,
-	LocationID INT NOT NULL,
-	TermID INT NOT NULL,
+	CourseID INT,
+	Term VARCHAR(20),
+	CourseNumber VARCHAR(50),
+	Professor VARCHAR(20),
+	Credits INT,
+	LocationID INT
 	
 
 	CONSTRAINT FK_CourseOfferings_CourseID
 	FOREIGN KEY (CourseID) REFERENCES Courses(CourseID),
 
-	CONSTRAINT FK_CourseOfferings_ProfessorID
-	FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID),
+	--CONSTRAINT FK_CourseOfferings_ProfessorID
+	--FOREIGN KEY (ProfessorID) REFERENCES Professors(ProfessorID),
 
-	CONSTRAINT FK_CourseOfferings_MeetingTypeID
-	FOREIGN KEY (MeetingTypeID) REFERENCES MeetingTypes(MeetingTypeID),
+	--CONSTRAINT FK_CourseOfferings_MeetingTypeID
+	--FOREIGN KEY (MeetingTypeID) REFERENCES MeetingTypes(MeetingTypeID),
 
 	CONSTRAINT FK_CourseOfferings_LocationID
 	FOREIGN KEY (LocationID) REFERENCES Locations(LocationID),
 
-	CONSTRAINT FK_CourseOfferings_TermID
-	FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
+	--CONSTRAINT FK_CourseOfferings_TermID
+	--FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID)
 );
 GO
 
@@ -151,9 +152,8 @@ GO
 -- TRIRON
 -- EnrollmentID removed: Enrollments already stores StudentID, so having
 -- Students point back at Enrollments made a circular reference.
-CREATE TABLE Students (
-	StudentID INT IDENTITY(1,1) PRIMARY KEY,
-	USCBID VARCHAR(20) NOT NULL,
+CREATE TABLE Persons (
+	PersonalID INT IDENTITY(1,1) PRIMARY KEY,
 	FirstName VARCHAR(50),
 	LastName VARCHAR(50),
 	RestrictionID INT,           -- was VARCHAR(MAX); must match Restrictions.RestrictionID (INT)
@@ -182,16 +182,15 @@ GO
 -- TRIRON
 -- Making the assumption that all students financial responsibilities to the school are taken car of
 CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that information here
-	EnrollmentID INT IDENTITY(1,1) PRIMARY KEY,
-	StudentID INT,
-	CourseOfferingID INT NOT NULL,
+	PersonalID INT,
+	CourseOfferingID INT,
 	Grade VARCHAR(20),
 	RestrictionID INT,
 	CreditHours INT,
 	CourseID INT  -- Added course ID instead of CRN
 
-	CONSTRAINT FK_Enrollments_StudentID
-	FOREIGN KEY (StudentID) REFERENCES Students(StudentID),
+	CONSTRAINT PK_Enrollments_PersonalID_CourseOfferingID
+	PRIMARY KEY (PersonalID, CourseOfferingID),
 
 	CONSTRAINT FK_Enrollments_CourseOfferingID
 	FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID),
@@ -391,6 +390,9 @@ INSERT INTO MeetingTypes
 SELECT  DISTINCT Meeting_Type_Desc
 FROM [USCB Course Offerings - 11.4.26];
 
+DELETE FROM [USCB Course Offerings - 11.4.26]
+WHERE MEETING_TYPE_DESC IS NULL
+	AND (Title LIKE '%dummy%' OR Title LIKE '%test%');
 /* =====================================
 	StudentTerms (Status: Complete) 
 ========================================= */
@@ -412,15 +414,25 @@ SELECT *
 FROM Departments
 
 /* ===================================
-	 Professors (Status: Complete)
+	 Persons (Status: Complete)
    ==================================== */
 
-INSERT INTO Professors
+INSERT INTO Persons
 (
-	FullName
+	FirstName,
+	LastName
 )
-SELECT DISTINCT Professor 
-FROM [USCB Course Offerings - 11.4.26]
+SELECT DISTINCT 
+    LTRIM(RTRIM(SUBSTRING(Professor, CHARINDEX(',', Professor) + 1, LEN(Professor)))),
+    LTRIM(RTRIM(LEFT(Professor, CHARINDEX(',', Professor) - 1)))
+FROM [USCB Course Offerings - 11.4.26] AS co
+UNION
+SELECT first_name, last_name
+FROM STUDENT_MOCK_DATA
+
+SELECT *
+FROM Persons
+
 
 /* ================================
 		Courses (Status: Complete)
@@ -438,23 +450,54 @@ FROM Courses
   ==================================== */
 -- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
 -- Location ID, TermID
-INSERT INTO CourseOfferings
-SELECT CRN
-FROM [USCB Course Offerings - 11.4.26];
-	
+INSERT INTO CourseOfferings (CRN, Credits)
+SELECT DISTINCT c.CourseID, cc.Course_Number AS CourseNumber, co1.Credits, co1.Meeting_Type_Desc AS MeetingTypeDesc, co1.Academic_Period_Desc AS Term, cc.Status_Description AS [Status], co1.Professor 
+FROM [USCB Course Offerings - 11.4.26] AS co1
+	INNER JOIN Courses AS c ON co1.Title = c.CourseTitle
+	INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON c.CourseTitle = cc.Title_Short_Description
+
+SELECT *
+FROM [USCB Course Offerings - 11.4.26]
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
+ORDER BY Title_Short_Description ASC
+SELECT CourseTitle
+FROM Courses
+ORDER BY CourseTitle ASC
+
+SELECT *
+FROM Professors
+SELECT CreditMin
+FROM Courses
+SELECT *
+FROM CourseOfferings
+
+--INSERT INTO CourseOfferings (CourseID)
+--SELECT CourseID
+--FROM Courses
+
+INSERT INTO CourseOfferings (ProfessorID)
+SELECT ProfessorID
+FROM Professors
+ 
+INSERT INTO CourseOfferings (MeetingTypeID)
+SELECT MeetingTypeID
+FROM MeetingTypes
+
+INSERT INTO CourseOfferings (LocationID)
+SELECT LocationID
+FROM Locations
+
+INSERT INTO CourseOfferings (TermID)
+SELECT TermID
+FROM StudentTerms
+
+
+-- Course Offerings is generated however need to inner join to get rid of all the null values
 
 
 SELECT * 
-FROM [USCB Course Offerings - 11.4.26];
-
-
-
-SELECT *
-FROM [USCB Course Catalog - 11.4.26];
-
-SELECT *
-FROM Students
-
+FROM CourseOfferings
 /* ===========================
 		Restrictions (Status: Completed)
  ============================= */
@@ -535,12 +578,6 @@ VALUES ('ISAT'), ('CSCI'), ('MATH'), ('PSYC')
 SELECT *
 FROM [Degrees]
 
-/* =======================================
-		Enrollments (Status: In Progress) -- FINISH TN
-========================================== */
-SELECT *
-FROM [USCB Course Catalog - 11.4.26];
-
 
 /* =================================== 
 		1ST YEAR STUDENT INSERT
@@ -556,6 +593,23 @@ FROM Students
 INSERT INTO Students (USCBID, FirstName, LastName)
 SELECT USCB_ID, first_name, last_name
 FROM STUDENT_MOCK_DATA
+
+/* =======================================
+				Enrollments
+=========================================*/
+
+
+SELECT co.CRN, co.Credits
+FROM [USCB Course Offerings - 11.4.26] AS co
+INNER JOIN Students 
+
+SELECT *
+FROM Students
+
+
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
+
 
 
 
