@@ -286,3 +286,34 @@ Total tables progress:
 
 . Populated the professors table
 
+11-25-26: Terrance Dessaure (5hrs)
+
+Course Offering table:
+- This table should hold all the information about the course that we are allowing the students to enroll in.
+- The column in this table consists of:
+- - The identity column CourseOfferingID
+  - CourseID: is the foreign key that points back to the Courses table
+  - Term: the term when the course was offered
+  - Professors: name of the professor that is teaching the course
+  - CourseNumber
+  - Section
+  - Title: title of the couse
+  - Credits: how many credits the course is worth
+  - MeetingTypeDesc: whether the meeting is a class or exam
+  - Days: what days the classes meet on
+  - Time: what time the classes meet at
+  - LocationID: point back to the locations table that tell what building and room number (Need to finishing joining: every column is currently null)
+Enrollments table:
+- Enrollment shows what student is enrolled in which class  offering
+- -There is going to be a composite key for this table
+- - It will handle if a student has to retake a course, A students obviously can retake a class in the same term so having it be a composite key always ensures that the student can take the class. Just not in the same term
+  - RestrictionID
+  - Grade
+  - Credit hours
+
+TODO:
+- [x] Male sure persons table is loaded in correctly
+- [x] Make sure other tables are all loaded in and ready for student data population
+- [x] Reorganize the script and get rid of any unused code.
+- [x]  Update the md file on git hub and push the changes
+- [ ] Update the doc file 
