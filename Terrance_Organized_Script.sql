@@ -63,15 +63,16 @@ CREATE TABLE StudentTerms (
 GO
 
 -- TRIRON
-CREATE TABLE Courses (
+CREATE TABLE Courses ( 
 	CourseID INT IDENTITY(1,1) PRIMARY KEY,
 	CourseTitle VARCHAR(50),
+	CourseSubject VARCHAR(20),
+	CourseNum VARCHAR(20),
 	CourseDescription VARCHAR(MAX),
 	CreditMin INT,
 	CreditMax INT
 );
 GO
-
 -- Terrance
 CREATE TABLE MeetingTypes (
 	MeetingTypeID INT IDENTITY(1,1) PRIMARY KEY,
@@ -119,10 +120,7 @@ CREATE TABLE CourseOfferings (
 	CourseID         INT NOT NULL,
 	Term             VARCHAR(50),
 	Professor        VARCHAR(100),
-	[Subject]        VARCHAR(20),
 	CourseNumber     VARCHAR(20),
-	Section          VARCHAR(20),
-	Title            VARCHAR(200),
 	Credits          VARCHAR(10),
 	MeetingTypeDesc  VARCHAR(50),
 	[Days]           VARCHAR(20),
@@ -261,9 +259,10 @@ INSERT INTO Classifications (StudentClassificationDescription)
 VALUES ('Incoming'), ('Freshman'), ('Sophomore'), ('Junior'), ('Senior'), ('Alumni');
 
 -- Locations
-INSERT INTO Locations
-SELECT DISTINCT Campus_Desc, Room, Building
-FROM [USCB Course Offerings - 11.4.26];
+INSERT INTO Locations (CollegeDescription, BuildingDescription, RoomNum)
+SELECT DISTINCT CAMPUS_DESC, Building, Room
+FROM [USCB Course Offerings - 11.4.26]
+WHERE Building IS NOT NULL;
 
 -- Student Terms
 INSERT INTO StudentTerms
@@ -271,9 +270,10 @@ SELECT DISTINCT Academic_Period_Desc
 FROM [USCB Course Offerings - 11.4.26];
 
 -- Courses
-INSERT INTO Courses
-SELECT DISTINCT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Credit
-FROM [USCB Course Catalog - 11.4.26];
+INSERT INTO Courses (CourseTitle, CourseSubject, CourseNum, CourseDescription, CreditMin, CreditMax)
+SELECT DISTINCT MAX(Title_Short_Description), Subject, Course_Number, MAX(Course_Description), MIN(Minimum_Credit), MAX(Maximum_Credit)
+FROM [USCB Course Catalog - 11.4.26]
+GROUP BY Subject, Course_Number;
 
 -- Professors 
 INSERT INTO Professors (FirstName, LastName)
@@ -289,22 +289,27 @@ GO
 		6. POPULATE MAIN TABLES
 ===================================================================== */
 
--- CourseOfferings
+-- Course Offerings
 INSERT INTO CourseOfferings
-	(CourseID, Term, Professor, [Subject], CourseNumber, Section,
-	 Title, Credits, MeetingTypeDesc, [Days], [Time], LocationID)
+    (CourseID, Term, CourseNumber, Professor, Credits, [Days], [Time], MeetingTypeDesc, LocationID)
 SELECT DISTINCT
-	c.CourseID, col.ACADEMIC_PERIOD_DESC, col.Professor, col.Subject,
-	cc.Course_Number, col.Section, col.Title, col.Credits,
-	col.MEETING_TYPE_DESC, col.Days, col.Time,
-	l.LocationID
+    c.CourseID,
+    col.ACADEMIC_PERIOD_DESC,
+    col.Course,
+    col.Professor,
+    col.Credits,
+    col.Days,
+    col.Time,
+    col.MEETING_TYPE_DESC,
+    l.LocationID
 FROM [USCB Course Offerings - 11.4.26] AS col
-INNER JOIN Courses AS c ON col.Title = c.CourseTitle
-INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON c.CourseTitle = cc.Title_Short_Description
+INNER JOIN Courses AS c
+    ON  c.CourseSubject = col.Subject
+    AND c.CourseNum     = col.Course
 LEFT JOIN Locations AS l
-	ON  l.CollegeDescription  = col.CAMPUS_DESC
-	AND l.BuildingDescription = col.Building
-	AND l.RoomNum             = col.Room;
+    ON  l.CollegeDescription  = col.CAMPUS_DESC
+    AND l.BuildingDescription = col.Building
+    AND l.RoomNum             = col.Room;
 
 -- Persons (the 400 mock students + 644 professors)
 INSERT INTO Persons
@@ -315,8 +320,8 @@ UNION ALL -- Use UNION ALL Here because if a student and a professor has the sam
 SELECT NULL, first_name, last_name
 FROM STUDENT_MOCK_DATA;
 
--- TODO: Enrollments insert
 
+-- TODO: Enrollments insert
 
 
 /* ==================================================================
