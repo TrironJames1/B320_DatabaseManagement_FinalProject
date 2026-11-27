@@ -57,6 +57,7 @@ CREATE TABLE Locations (
 GO
 
 -- TRIRON
+-- Possibly get rid of due to one column containing all of the information that we need from this table
 CREATE TABLE StudentTerms (		-- Deleted Date due to the column Academic_Period_Desc within the CourseOfferings table 
 -- offering both the term and the year of the term
 -- Instead of the date will just input the Academic_Period_Desc into the Desction for the table
@@ -66,9 +67,11 @@ CREATE TABLE StudentTerms (		-- Deleted Date due to the column Academic_Period_D
 GO
 
 -- TRIRON
-CREATE TABLE Courses (
+CREATE TABLE Courses ( 
 	CourseID INT IDENTITY(1,1) PRIMARY KEY,
 	CourseTitle VARCHAR(50),
+	CourseSubject VARCHAR(20),
+	CourseNum VARCHAR(20),
 	CourseDescription VARCHAR(MAX),
 	CreditMin INT,
 	CreditMax INT
@@ -125,9 +128,13 @@ CREATE TABLE CourseOfferings (
 	CourseID INT,
 	Term VARCHAR(20),
 	CourseNumber VARCHAR(50),
-	Professor VARCHAR(20),
+	Professor VARCHAR(50),
 	Credits INT,
+	[Days] VARCHAR(20),
+	[Time] VARCHAR(20),
+	MeetingType VARCHAR(20),
 	LocationID INT
+	
 	
 
 	CONSTRAINT FK_CourseOfferings_CourseID
@@ -164,13 +171,13 @@ CREATE TABLE Persons (
 	Concentration VARCHAR(50)
 	
 
-	CONSTRAINT FK_Students_RestrictionID
+	CONSTRAINT FK_Persons_RestrictionID
 	FOREIGN KEY (RestrictionID) REFERENCES Restrictions(RestrictionID),
 
-	CONSTRAINT FK_Students_DegreeID
+	CONSTRAINT FK_Persons_DegreeID
 	FOREIGN KEY (DegreeID) REFERENCES [Degrees](DegreeID),
 
-	CONSTRAINT FK_Students_ClassificationID
+	CONSTRAINT FK_Persons_ClassificationID
 	FOREIGN KEY (ClassificationID) REFERENCES Classifications(ClassificationID),
 
 	
@@ -377,7 +384,7 @@ GO
 		 Locations (Status: Complete)
   ========================================= */
 INSERT INTO Locations
-SELECT DISTINCT Campus_Desc, Room, Building
+SELECT DISTINCT Campus_Desc, Building, Room
 FROM [USCB Course Offerings - 11.4.26];
 
 SELECT *
@@ -393,6 +400,9 @@ FROM [USCB Course Offerings - 11.4.26];
 DELETE FROM [USCB Course Offerings - 11.4.26]
 WHERE MEETING_TYPE_DESC IS NULL
 	AND (Title LIKE '%dummy%' OR Title LIKE '%test%');
+
+	SELECT *
+	FROM MeetingTypes
 /* =====================================
 	StudentTerms (Status: Complete) 
 ========================================= */
@@ -413,6 +423,8 @@ FROM [USCB Course Catalog - 11.4.26];
 SELECT *
 FROM Departments
 
+
+
 /* ===================================
 	 Persons (Status: Complete)
    ==================================== */
@@ -426,9 +438,14 @@ SELECT DISTINCT
     LTRIM(RTRIM(SUBSTRING(Professor, CHARINDEX(',', Professor) + 1, LEN(Professor)))),
     LTRIM(RTRIM(LEFT(Professor, CHARINDEX(',', Professor) - 1)))
 FROM [USCB Course Offerings - 11.4.26] AS co
+WHERE  LTRIM(RTRIM(SUBSTRING(Professor, CHARINDEX(',', Professor) + 1, LEN(Professor)))) IS NOT NULL 
+AND LTRIM(RTRIM(LEFT(Professor, CHARINDEX(',', Professor) - 1))) IS NOT NULL
 UNION
 SELECT first_name, last_name
 FROM STUDENT_MOCK_DATA
+WHERE first_name IS NOT NULL AND last_name IS NOT NULL
+
+-- ADDED where is not null to ensure there is no null values within the FirstName and LastName columns
 
 SELECT *
 FROM Persons
@@ -437,31 +454,63 @@ FROM Persons
 /* ================================
 		Courses (Status: Complete)
  =================================== */
-INSERT INTO Courses
-SELECT DISTINCT Title_Short_Description, Course_Description, Minimum_Credit, Maximum_Credit
-FROM [USCB Course Catalog - 11.4.26];
+ -- This table was producing duplicate data within the CourseOfferings table
+ -- MAX picks the last title when there may be mulitiple versions of the course name
+ -- MAX also does the same thing for description picks the last version
+ -- Min Credit picks the smallest value
+ -- MAX credit picks the highest credit value if there is one
+ -- Also Added CourseSubject and Course Number to the table
+INSERT INTO Courses (CourseTitle, CourseSubject, CourseNum, CourseDescription, CreditMin, CreditMax)
+SELECT DISTINCT MAX(Title_Short_Description), Subject, Course_Number, MAX(Course_Description), MIN(Minimum_Credit), MAX(Maximum_Credit)
+FROM [USCB Course Catalog - 11.4.26]
+GROUP BY Subject, Course_Number;
 
+SELECT *
+FROM [USCB Course Catalog - 11.4.26]
 -- Courses (Test)
 SELECT *
 FROM Courses 
 
 /* ===================================
-			CourseOfferings -- Terrance is taking care of this table
+			CourseOfferings 
   ==================================== */
--- CourseOfferings -- Still needs the CourseOfferingsID (Will automatically be generated), CourseID, ProfessorID,
--- Location ID, TermID
-INSERT INTO CourseOfferings (CRN, Credits)
-SELECT DISTINCT c.CourseID, cc.Course_Number AS CourseNumber, co1.Credits, co1.Meeting_Type_Desc AS MeetingTypeDesc, co1.Academic_Period_Desc AS Term, cc.Status_Description AS [Status], co1.Professor 
+-- The original Courses join was was joining only on the course title which  would make one row for each different description or difference within the other data within the row that have the same course title
+-- Fixed that by joining courses not only on the course title, but also the course number
+-- Locations ws creating duplicates because the table was originally joined only on the room number
+-- Fixed that by joining on the campus, building, and room together to minimize duplication
+-- Left joined Locations instead of Inner joined to keep the classes that were online and don't have a room
+INSERT INTO CourseOfferings (CourseID, Term, CourseNumber, Professor, Credits, Days, Time, MeetingType, l.LocationID)
+SELECT DISTINCT c.CourseID, co1.Academic_Period_Desc /*AS Term*/, c.CourseNum /*AS CourseNumber*/,  co1.Professor, co1.Credits, co1.Days, co1.Time, co1.Meeting_Type_Desc, l.LocationID--, [Days], [Time]--, co1.Meeting_Type_Desc AS MeetingTypeDesc, co1.Academic_Period_Desc AS Term, cc.Status_Description AS [Status], co1.Professor 
 FROM [USCB Course Offerings - 11.4.26] AS co1
 	INNER JOIN Courses AS c ON co1.Title = c.CourseTitle
-	INNER JOIN [USCB Course Catalog - 11.4.26] AS cc ON c.CourseTitle = cc.Title_Short_Description
+		AND co1.Course = c.CourseNum
+	LEFT JOIN Locations AS l ON co1.Room = l.RoomNum 
+		AND co1.Building = l.BuildingDescription 
+		AND co1.Campus_Desc = l.CollegeDescription
+WHERE co1.Professor IS NOT NULL
+ORDER BY CourseNum
+
+
+-- These statements below are checking to see if we are repeating any data within the CourseOfferings table
+SELECT COUNT(*) FROM CourseOfferings; 
+SELECT COUNT(*) FROM (SELECT DISTINCT Academic_Period_Desc, Subject, Course, Professor, Days, Time, Room
+FROM [USCB Course Offerings - 11.4.26]
+WHERE Professor IS NOT NULL) x;
+
+--INSERT INTO CourseOfferings (LocationID)
+--SELECT LocationID
+--FROM Locations
+
+
+SELECT *
+FROM Locations
 
 SELECT *
 FROM [USCB Course Offerings - 11.4.26]
 SELECT *
 FROM [USCB Course Catalog - 11.4.26]
 ORDER BY Title_Short_Description ASC
-SELECT CourseTitle
+SELECT *
 FROM Courses
 ORDER BY CourseTitle ASC
 
@@ -476,21 +525,21 @@ FROM CourseOfferings
 --SELECT CourseID
 --FROM Courses
 
-INSERT INTO CourseOfferings (ProfessorID)
-SELECT ProfessorID
-FROM Professors
+--INSERT INTO CourseOfferings (ProfessorID)
+--SELECT ProfessorID
+--FROM Professors
  
-INSERT INTO CourseOfferings (MeetingTypeID)
-SELECT MeetingTypeID
-FROM MeetingTypes
+--INSERT INTO CourseOfferings (MeetingTypeID)
+--SELECT MeetingTypeID
+--FROM MeetingTypes
 
-INSERT INTO CourseOfferings (LocationID)
-SELECT LocationID
-FROM Locations
+--INSERT INTO CourseOfferings (LocationID)
+--SELECT LocationID
+--FROM Locations
 
-INSERT INTO CourseOfferings (TermID)
-SELECT TermID
-FROM StudentTerms
+--INSERT INTO CourseOfferings (TermID)
+--SELECT TermID
+--FROM StudentTerms
 
 
 -- Course Offerings is generated however need to inner join to get rid of all the null values
@@ -582,33 +631,40 @@ FROM [Degrees]
 /* =================================== 
 		1ST YEAR STUDENT INSERT
 =====================================*/ 
+-- No longer have a students table instead have a persons table
+--SELECT TOP 10 *
+--FROM STUDENT_MOCK_DATA
 
-SELECT TOP 10 *
-FROM STUDENT_MOCK_DATA
-
-SELECT *
-FROM Students
+--SELECT *
+--FROM Students
 
 
-INSERT INTO Students (USCBID, FirstName, LastName)
-SELECT USCB_ID, first_name, last_name
-FROM STUDENT_MOCK_DATA
+--INSERT INTO Students (USCBID, FirstName, LastName)
+--SELECT USCB_ID, first_name, last_name
+--FROM STUDENT_MOCK_DATA
 
 /* =======================================
 				Enrollments
 =========================================*/
 
 
-SELECT co.CRN, co.Credits
-FROM [USCB Course Offerings - 11.4.26] AS co
-INNER JOIN Students 
+--SELECT co.CRN, co.Credits
+--FROM [USCB Course Offerings - 11.4.26] AS co
+--INNER JOIN Students 
 
-SELECT *
-FROM Students
+--SELECT *
+--FROM Students
 
+--CREATE TABLE Enrollments ( -- Got rid of CourseBillingLineItems and input that information here
+--	PersonalID INT,
+--	CourseOfferingID INT,
+--	Grade VARCHAR(20),
+--	RestrictionID INT,
+--	CreditHours INT,
+--	CourseID INT
 
-SELECT *
-FROM [USCB Course Catalog - 11.4.26]
+--SELECT *
+--FROM [USCB Course Catalog - 11.4.26]
 
 
 
