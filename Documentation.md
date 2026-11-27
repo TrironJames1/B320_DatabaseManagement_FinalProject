@@ -325,7 +325,7 @@ TODO:
   
 11-27-26: Triron James (4hrs)
 Persons:
-- Adjusted the Persons table to not allow null values
+- Adjusted the Persons table insert script to not allow null values
 Courses:
 - Notes
     . The table was producing a large amount of duplicate data when being joined to the course offerings table due to the table created new rows for each variation within the course title although it is the same course
