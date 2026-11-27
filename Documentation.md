@@ -317,3 +317,31 @@ TODO:
 - [x] Reorganize the script and get rid of any unused code.
 - [x]  Update the md file on git hub and push the changes
 - [ ] Update the doc file 
+
+11-25-26: Triron James (4 hrs)
+- Adjusted Course Offering Information
+- Got rid of students table and turned it into Persons table
+- Adjusted enrollments table as well as the terms table
+  
+11-27-26: Triron James (4hrs)
+Persons:
+- Adjusted the Persons table insert script to not allow null values
+Courses:
+- Notes
+    . The table was producing a large amount of duplicate data when being joined to the course offerings table due to the table created new rows for each variation within the course title although it is the same course
+- Adjustments
+    . Max(Title_Short_Description) picks the latest title when there may be multiple versions of the course name
+    . Max(Course_Description) picks the latest value of course description when there may be multiple variations of the description
+    . Min(Minimum_Credit) picks the minimum credit value
+    . Max(Maximum_Credit) picks the maximum value
+Course Offerings:
+Adjustments:
+- Adjusted the course offerings table by adding CourseNumber, Days, Time, and MeetingType to the create table script
+  . The data types for [Days] and [Time] will be Varchar(20)
+- The original Courses join was was joining only on the course title which would make one row for each different description or difference within the other data within the row that have the same course title
+- Fixed that by joining courses not only on the course title, but also the course number
+- Locations ws creating duplicates because the table was originally joined only on the room number
+- Fixed that by joining on the campus, building, and room together to minimize duplication
+- Left joined Locations instead of Inner joined to keep the classes that were online and don't have a room
+
+  
