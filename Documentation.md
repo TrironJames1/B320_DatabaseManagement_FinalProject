@@ -318,12 +318,12 @@ TODO:
 - [x]  Update the md file on git hub and push the changes
 - [ ] Update the doc file 
 
-11-25-26: Triron James (4 hrs)
+## 11-25-26: Triron James (4 hrs)
 - Adjusted Course Offering Information
 - Got rid of students table and turned it into Persons table
 - Adjusted enrollments table as well as the terms table
   
-11-27-26: Triron James (4hrs)
+## 11-27-26: Triron James (4hrs)
 Persons:
 - Adjusted the Persons table insert script to not allow null values
 Courses:
@@ -344,4 +344,26 @@ Adjustments:
 - Fixed that by joining on the campus, building, and room together to minimize duplication
 - Left joined Locations instead of Inner joined to keep the classes that were online and don't have a room
 
-  
+## 11-27-26: Terrance Dessaure (2hrs)
+Making changes:
+- The Persons table should be allowed to have Nulls ProfessorID is going to be null for every student. The only thing that should not be null is the primary key.
+- I made some changes to my Courses and Course Offerings  table:
+- - The Course table  now groups but the subject
+  - We technically do not need the `DISTINCT`  in the select statement because the `GROUP BY` eliminates the duplicates
+  - Also the `MAX` on the text picks the value that comes lsat alphabetically, not the newest version
+  - Corrected my CourseOfferings to use a left join  that compares the same three columns
+ 
+Populated the students in the Persons table:
+- I gave each student there ClassificationID and Major
+- The goal was to have 240 students with 60 student per major and 40 students for each classification (Incoming - Alumni). Since there are 160 other mock students we are going to leave them null for the time being.
+- Used a Common Table Expression with 3 parts
+- - The CTE  creates temporary, named results that only only exist for the statement that is right after it. In this case that would be the `UPDATE` statement.
+  - Numbered: This skips over the professors and only starts the count where there the ProfessorID  `IS NULL`. It ranks them in order, starting at 0.
+  - Majors / Classes: These are small look up list that  map a position number to a value
+  - There is some math that I want to include a description for, just for documentation purposes.
+  - rn / 60: this determines which major the student gets assigned. (ex. rn 0-59 get  ISAT , rn 60-119 gets CSCI...
+  - rn % 60: positions 0-9 get assigned incoming, 10-19 gets assigned freshman...
+- Join Classification:
+- - This turns the descriptions into the classificationID from our classifications table.
+
+I have not started on the enrollments yet so the table is created there are just no inserts.
