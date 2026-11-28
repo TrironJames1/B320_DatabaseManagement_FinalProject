@@ -371,3 +371,10 @@ I have not started on the enrollments yet so the table is created there are just
 Documentation:
 https://learn.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql?view=sql-server-ver17&viewFallbackFrom=sql-server-2016
 
+Brain Storming for Student Enrollments:
+1. Create and EnrollmentStatus look up table ( Enrolled, Completed, Dropped)
+2. Add a that Status to Enrollments ( 1, 2, 3)
+3. Put the Terms in order ( We can order the terms by assigning a start date to term)
+4. Link each course offering to a term
+5. Then we much decide what each classification history looks like. ( I think it would be best if we assume that an incoming student has complete 0 semester but they are enrolled in classes. For and alumni They have completed 8 semester.)
+6. Next we recorded each of the students
