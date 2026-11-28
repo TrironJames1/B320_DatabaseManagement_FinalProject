@@ -367,3 +367,7 @@ Populated the students in the Persons table:
 - - This turns the descriptions into the classificationID from our classifications table.
 
 I have not started on the enrollments yet so the table is created there are just no inserts.
+
+Documentation:
+https://learn.microsoft.com/en-us/sql/t-sql/functions/row-number-transact-sql?view=sql-server-ver17&viewFallbackFrom=sql-server-2016
+
