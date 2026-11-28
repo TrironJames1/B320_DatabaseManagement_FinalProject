@@ -320,6 +320,83 @@ UNION ALL -- Use UNION ALL Here because if a student and a professor has the sam
 SELECT NULL, first_name, last_name
 FROM STUDENT_MOCK_DATA;
 
+WITH Numbered AS (            -- the students, numbered 0, 1, 2, ...
+    SELECT PersonalID,
+           ROW_NUMBER() OVER (ORDER BY PersonalID) - 1 AS rn
+    FROM Persons
+    WHERE ProfessorID IS NULL
+),
+Majors AS (                   -- the 4 majors, numbered 0–3
+    SELECT * 
+	FROM (VALUES
+        (0, 'ISAT'),       -- ← replace with your real major names
+        (1, 'CSCI'),
+        (2, 'MATH'),
+        (3, 'PSYC')
+    ) AS m(idx, MajorName)
+),
+Classes AS (                  -- the 6 classifications, numbered 0–5
+    SELECT * 
+	FROM (VALUES
+        (0, 'Incoming'), (1, 'Freshman'), (2, 'Sophomore'),
+        (3, 'Junior'),   (4, 'Senior'),   (5, 'Alumni')
+    ) AS c(idx, Descr)
+)
+UPDATE p
+SET Major            = m.MajorName,
+    ClassificationID = cl.ClassificationID
+FROM Persons p
+JOIN Numbered n         ON n.PersonalID = p.PersonalID
+JOIN Majors m           ON m.idx = n.rn / 60                  -- every 60 students → next major
+JOIN Classes c          ON c.idx = (n.rn % 60) / 10           -- every 10 within a major → next classification
+JOIN Classifications cl ON cl.StudentClassificationDescription = c.Descr;
+
+/* ============================================================
+	NOTES: Assigning majors and classifications to students
+   ============================================================
+	Goal: 240 students -> 60 per major (4 majors),
+	      and within each major, 10 per classification (6 classifications).
+	      The other 160 mock students are extras and stay NULL.
+
+	WITH (CTE):
+	  Creates temporary, named results that only exist for the one
+	  statement right after it (the UPDATE). Nothing is saved.
+	  Run the whole block, from WITH to the final semicolon, together.
+
+	Numbered:
+	  Numbers only the students (ProfessorID IS NULL skips professors)
+	  0, 1, 2, ... in order of PersonalID.
+	  The first student (PersonalID 645) gets rn = 0.
+
+	Majors / Classes:
+	  Small lookup lists that map a position number to a value.
+	  Majors:  0-3 -> major name
+	  Classes: 0-5 -> classification description
+
+	The math:
+	  rn / 60         -> which major (integer division drops the decimal)
+	                     rn 0-59 = major 0, 60-119 = major 1, ...
+	                     rn 240+ = 4 or more -> no match -> student skipped
+	  (rn % 60) / 10  -> which classification within that major
+	                     % (modulo) = the remainder after dividing
+	                     positions 0-9 = Incoming, 10-19 = Freshman, ...
+
+	JOIN Classifications
+	  Turns the description (e.g. 'Freshman') into the real
+	  ClassificationID from the Classifications table, so the
+	  foreign key always gets a valid ID, even if IDs change.
+
+	SET
+	  Saves the major name and the ClassificationID into Persons.
+
+	Example: PersonalID 720 -> rn 75
+	  75 / 60 = 1           -> Major 2
+	  (75 % 60) / 10 = 1    -> Freshman -> ClassificationID looked up
+
+	Note: descriptions in Classes must be spelled exactly like the
+	      ones in the Classifications table, or those students get no classification.
+   ============================================================ */
+
 
 -- TODO: Enrollments insert
 
