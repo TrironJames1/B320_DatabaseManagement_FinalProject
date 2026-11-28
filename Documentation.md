@@ -378,3 +378,11 @@ Brain Storming for Student Enrollments:
 4. Link each course offering to a term
 5. Then we much decide what each classification history looks like. ( I think it would be best if we assume that an incoming student has complete 0 semester but they are enrolled in classes. For and alumni They have completed 8 semester.)
 6. Next we recorded each of the students
+
+Notes: Since we are making changes to the script have the notes for deleting and altering the tables in my Terrance_Organized_Script file. The instructions are commented out. You only have to run them once on your side and then make corrections to the original create insert scripts.
+
+Check for:
+- EnrollmentStatus lookup table, and insert
+- Make corrections to course offerings
+- Make corrections to Enrollments after creating enrollment status
+- Run update for StudentTerms to give start dates to all the terms. (Do this so when we are looking at a students history in the future we can order the by the start dates)
