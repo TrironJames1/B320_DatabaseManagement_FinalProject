@@ -15,7 +15,7 @@
 		Child tables (the ones holding foreign keys) are dropped first,
 		otherwise SQL Server refuses to drop a table another table points to.
 ===================================================================== */
-DROP TABLE IF EXISTS CourseBillingLineItems;
+
 DROP TABLE IF EXISTS Enrollments;
 DROP TABLE IF EXISTS Persons;
 DROP TABLE IF EXISTS CourseOfferings;
@@ -30,6 +30,7 @@ DROP TABLE IF EXISTS Courses;
 DROP TABLE IF EXISTS StudentTerms;
 DROP TABLE IF EXISTS Locations;
 DROP TABLE IF EXISTS Departments;
+DROP TABLE IF EXISTS EnrollmentStatuses;
 GO
 
 
@@ -110,6 +111,13 @@ CREATE TABLE Professors (
 );
 GO
 
+-- Terrance
+CREATE TABLE EnrollmentStatuses (
+    EnrollmentStatusID INT IDENTITY(1,1) PRIMARY KEY,
+    StatusDescription  VARCHAR(20) NOT NULL UNIQUE
+);
+GO
+
 /* ==================================================================
 		3. CREATE TABLES WITH FOREIGN KEYS (after their parents)
 ===================================================================== */
@@ -118,7 +126,7 @@ GO
 CREATE TABLE CourseOfferings (
 	CourseOfferingID INT IDENTITY(1,1) PRIMARY KEY,
 	CourseID         INT NOT NULL,
-	Term             VARCHAR(50),
+	TermID          VARCHAR(50),
 	Professor        VARCHAR(100),
 	CourseNumber     VARCHAR(20),
 	Credits          VARCHAR(10),
@@ -162,19 +170,39 @@ GO
 -- TRIRON
 -- Assumes all students' financial responsibilities to the school are taken care of.
 CREATE TABLE Enrollments (
-	EnrollmentID     INT IDENTITY(1,1) PRIMARY KEY,
-	PersonalID       INT NOT NULL,
-	CourseOfferingID INT NOT NULL,
+    EnrollmentID       INT IDENTITY(1,1) PRIMARY KEY,
+    PersonalID         INT NOT NULL,
+    CourseOfferingID   INT NOT NULL,
+    EnrollmentStatusID INT NOT NULL,
+    Grade              VARCHAR(2) NULL,          -- NULL until the course is completed
 
-	CONSTRAINT UQ_Enrollments_Person_Course
-		UNIQUE (PersonalID, CourseOfferingID),
-	CONSTRAINT FK_Enrollments_PersonalID
-		FOREIGN KEY (PersonalID) REFERENCES Persons(PersonalID),
-	CONSTRAINT FK_Enrollments_CourseOfferingID
-		FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID)
+    CONSTRAINT UQ_Enrollments_Person_Course UNIQUE (PersonalID, CourseOfferingID),
+    CONSTRAINT FK_Enrollments_PersonalID
+        FOREIGN KEY (PersonalID) REFERENCES Persons(PersonalID),
+    CONSTRAINT FK_Enrollments_CourseOfferingID
+        FOREIGN KEY (CourseOfferingID) REFERENCES CourseOfferings(CourseOfferingID),
+    CONSTRAINT FK_Enrollments_StatusID
+        FOREIGN KEY (EnrollmentStatusID) REFERENCES EnrollmentStatuses(EnrollmentStatusID)
 );
 GO
 
+/* Run this when adding the EnrollmentStatus
+
+ALTER TABLE Enrollments ADD EnrollmentStatusID INT NULL;
+GO
+
+ALTER TABLE Enrollments ADD Grade  VARCHAR(2) NULL;
+GO
+
+ALTER TABLE Enrollments ALTER COLUMN EnrollmentStatusID INT NOT NULL;
+
+ALTER TABLE Enrollments ADD CONSTRAINT FK_Enrollments_StatusID
+    FOREIGN KEY (EnrollmentStatusID) REFERENCES EnrollmentStatuses(EnrollmentStatusID);
+GO
+*/
+
+select *
+from Enrollments
 
 /* ==================================================================
 		4. DATA CLEANING (imported tables)
@@ -284,6 +312,11 @@ FROM [USCB Course Offerings - 11.4.26]
 WHERE Professor LIKE '%,%';
 GO
 
+-- EnrollmentStatuses
+INSERT INTO EnrollmentStatuses (StatusDescription)
+VALUES ('Enrolled'), ('Completed'), ('Dropped');
+GO
+
 
 /* ==================================================================
 		6. POPULATE MAIN TABLES
@@ -291,7 +324,7 @@ GO
 
 -- Course Offerings
 INSERT INTO CourseOfferings
-    (CourseID, Term, CourseNumber, Professor, Credits, [Days], [Time], MeetingTypeDesc, LocationID)
+    (CourseID, TermID, CourseNumber, Professor, Credits, [Days], [Time], MeetingTypeDesc, LocationID)
 SELECT DISTINCT
     c.CourseID,
     col.ACADEMIC_PERIOD_DESC,
@@ -306,6 +339,8 @@ FROM [USCB Course Offerings - 11.4.26] AS col
 INNER JOIN Courses AS c
     ON  c.CourseSubject = col.Subject
     AND c.CourseNum     = col.Course
+INNER JOIN StudentTerms AS t 
+	ON t.Description = col.ACADEMIC_PERIOD_DESC
 LEFT JOIN Locations AS l
     ON  l.CollegeDescription  = col.CAMPUS_DESC
     AND l.BuildingDescription = col.Building
@@ -412,3 +447,99 @@ JOIN Classifications cl ON cl.StudentClassificationDescription = c.Descr;
 -- character instead of at a fixed number.
 -- UNOIN ALL: does not merge duplicats
 -- LTRIM and RTRIM: remove an spaces from the left and right of a selected text
+
+select *
+from StudentTerms
+order by StartDate
+
+select *
+from CourseOfferings
+/* ==================================================
+		StudentTerms: add a StartDate so terms sort in order
+   ================================================== */
+
+-- 1. Add the column
+ALTER TABLE StudentTerms ADD StartDate DATE;
+GO
+
+-- 2. Fill in a start date for each term
+--    (dates only need to be in the right order, not exact)
+UPDATE t
+SET StartDate = d.StartDate
+FROM StudentTerms AS t
+JOIN (VALUES
+    ('Fall 2013',   '2013-08-15'),
+
+    ('Spring 2014', '2014-01-10'),
+    ('Summer 2014', '2014-05-20'),
+    ('Fall 2014',   '2014-08-15'),
+
+    ('Spring 2015', '2015-01-10'),
+    ('Summer 2015', '2015-05-20'),
+    ('Fall 2015',   '2015-08-15'),
+
+    ('Spring 2016', '2016-01-10'),
+    ('Summer 2016', '2016-05-20'),
+    ('Fall 2016',   '2016-08-15'),
+
+    ('Spring 2017', '2017-01-10'),
+    ('Summer 2017', '2017-05-20'),
+    ('Fall 2017',   '2017-08-15'),
+
+    ('Spring 2018', '2018-01-10'),
+    ('Summer 2018', '2018-05-20'),
+    ('Fall 2018',   '2018-08-15'),
+
+    ('Spring 2019', '2019-01-10'),
+    ('Summer 2019', '2019-05-20'),
+    ('Fall 2019',   '2019-08-15'),
+
+    ('Spring 2020', '2020-01-10'),
+    ('Summer 2020', '2020-05-20'),
+    ('Fall 2020',   '2020-08-15'),
+
+    ('Spring 2021', '2021-01-10'),
+    ('Summer 2021', '2021-05-20'),
+    ('Fall 2021',   '2021-08-15'),
+
+    ('Spring 2022', '2022-01-10'),
+    ('Summer 2022', '2022-05-20'),
+    ('Fall 2022',   '2022-08-15'),
+
+    ('Spring 2023', '2023-01-10'),
+    ('Summer 2023', '2023-05-20'),
+    ('Fall 2023',   '2023-08-15'),
+
+    ('Spring 2024', '2024-01-10'),
+    ('Summer 2024', '2024-05-20'),
+    ('Fall 2024',   '2024-08-15'),
+
+    ('Spring 2025', '2025-01-10'),
+    ('Summer 2025', '2025-05-20'),
+    ('Fall 2025',   '2025-08-15'),
+
+    ('Spring 2026', '2026-01-10'),
+    ('Summer 2026', '2026-05-20'),
+    ('Fall 2026',   '2026-08-15')
+) AS d(Description, StartDate)
+    ON d.Description = t.Description;
+GO
+
+/* Run these to add Term ID 
+ALTER TABLE CourseOfferings ADD TermID INT;
+GO
+
+UPDATE co
+SET TermID = t.TermID
+FROM CourseOfferings AS co
+JOIN StudentTerms AS t
+    ON t.Description = co.Term;
+
+SELECT *
+FROM CourseOfferings
+
+ALTER TABLE CourseOfferings ADD CONSTRAINT FK_CourseOfferings_TermID
+    FOREIGN KEY (TermID) REFERENCES StudentTerms(TermID);
+
+ALTER TABLE CourseOfferings DROP COLUMN Term;
+*/
